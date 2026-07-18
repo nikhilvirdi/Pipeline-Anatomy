@@ -5,28 +5,40 @@
       "label": "Developer",
       "phase": "local-development",
       "shape": "actor",
-      "source": "authored-icon"
+      "source": "authored-icon",
+      "note": "Phase 2 layout gap: JSON had no x/y for this node (source XML had it at x=-167.5,y=220, feeding directly into 'Writing the Code', but that position no longer fits now that 3 new nodes sit in between). Repositioned as the start of a horizontal chain leading into writing-the-code; not an XML-derived position.",
+      "x": -680,
+      "y": 140
     },
     {
       "id": "ideation",
       "label": "Ideation",
       "phase": "local-development",
       "shape": "rect",
-      "source": "authored"
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": -510,
+      "y": 140
     },
     {
       "id": "architecture",
       "label": "Architecture",
       "phase": "local-development",
       "shape": "rect",
-      "source": "authored"
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": -340,
+      "y": 140
     },
     {
       "id": "tech-stack-locked-in",
       "label": "Tech Stack Locked In",
       "phase": "local-development",
       "shape": "rect",
-      "source": "authored"
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": -170,
+      "y": 140
     },
     {
       "id": "writing-the-code",

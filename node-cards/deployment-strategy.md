@@ -1,0 +1,1 @@
+The method chosen for actually rolling the new version out to production: Blue-Green, Canary, Rolling, or Recreate, each with different tradeoffs around rollback speed and how many users are exposed at once.

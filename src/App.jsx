@@ -113,7 +113,10 @@ function DiagramCanvas() {
       const next = current.map((node) => {
         const source = baseNodeById.get(node.id);
         const hidden = hiddenNodeIds.has(node.id);
-        const staleTheme = source && source.data.theme !== node.data.theme;
+        const staleTheme =
+          source &&
+          (source.data.theme !== node.data.theme ||
+            source.data.icons !== node.data.icons);
         const staleLayout =
           source && source.data.orientation !== node.data.orientation;
         if (!staleTheme && !staleLayout && Boolean(node.hidden) === hidden) {

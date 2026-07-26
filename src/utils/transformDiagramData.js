@@ -76,6 +76,15 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
 
     // Handle sides must match these, or edges detach from the dots they point
     // at — the node components read `data.orientation` to stay in sync.
+    const isLoopbackNode =
+      node.id === 'pipeline-stops-ci' ||
+      node.id === 'developer-fixes-ci' ||
+      node.id === 'pipeline-stops-cd' ||
+      node.id === 'developer-fixes-cd' ||
+      node.id === 'notify-developer-team' ||
+      node.id === 'debug-fix-code' ||
+      node.id === 'rollback';
+
     return {
       id: node.id,
       type,
@@ -93,6 +102,7 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         mirroredStyle,
         theme,
         orientation,
+        isLoopback: isLoopbackNode,
         cardText: nodeCards[node.id] || '',
       },
     };
@@ -140,9 +150,9 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
 
     if (DECISION_NODE_IDS.has(edge.from)) {
       if (edge.from === 'post-production-health-check') {
-        if (edge.to === 'end-users') {
+        if (edge.to === 'notify-team-success') {
           sourceHandle = 'top';
-        } else if (edge.to === 'notify-team-success') {
+        } else if (edge.to === 'end-users') {
           sourceHandle = 'right';
         } else if (edge.to === 'rollback') {
           sourceHandle = 'bottom';

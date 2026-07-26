@@ -221,7 +221,7 @@
       "phase": "continuous-integration",
       "shape": "circle",
       "source": "xml",
-      "x": 4150,
+      "x": 4450,
       "y": 270
     },
     {
@@ -230,8 +230,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 4430,
-      "y": 270
+      "x": 4730,
+      "y": 350
     },
     {
       "id": "cd-system",
@@ -398,7 +398,7 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 7950,
+      "x": 8300,
       "y": 270
     },
     {

@@ -16,6 +16,7 @@ export const nodeIconMap = {
   'writing-the-code': [gitIcon],
   'local-testing': [eslintIcon, prettierIcon, jestIcon],
   'commit-push-code': [gitIcon],
+  'github': [githubLightLogo],
   'ci-system': [githubActionsIcon],
   'cd-system': [githubActionsIcon],
   'package-container-image': [dockerIcon],
@@ -25,8 +26,9 @@ export const nodeIconMap = {
 
 export function getNodeIcons(nodeId, theme = 'dark') {
   if (nodeId === 'github') {
-    // Dark mode -> white/light logo; Light mode -> dark logo
-    return [theme === 'dark' ? githubLightLogo : githubDarkLogo];
+    // Dark mode (dark card background) -> githubDarkLogo (white octocat logo)
+    // Light mode (light card background) -> githubLightLogo (black octocat logo)
+    return [theme === 'dark' ? githubDarkLogo : githubLightLogo];
   }
   return nodeIconMap[nodeId] || null;
 }

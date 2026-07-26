@@ -30,7 +30,15 @@ export default function CurvedEdge({
   let labelY = (sourceY + targetY) / 2;
 
   if (isLongLoopback) {
-    const marginY = 820;
+    let marginY = 820;
+    if (id.includes('rollback')) {
+      marginY = 760;
+    } else if (id.includes('developer-fixes-cd')) {
+      marginY = 810;
+    } else if (id.includes('developer-fixes-ci')) {
+      marginY = 860;
+    }
+
     const r = 20;
     edgePath =
       `M ${sourceX} ${sourceY} ` +
@@ -55,7 +63,7 @@ export default function CurvedEdge({
     labelY = bY;
   }
 
-  const defaultEdgeColor = isLight ? '#9ca3af' : '#6b7280';
+  const defaultEdgeColor = isLight ? '#334155' : '#e2e8f0';
   const labelBg = isLight
     ? 'bg-white/90 border-slate-300 text-amber-900 shadow-sm'
     : 'bg-slate-900/90 border-slate-700 text-amber-300 shadow-md';

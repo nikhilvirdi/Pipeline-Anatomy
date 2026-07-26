@@ -11,8 +11,8 @@ import React from 'react';
  */
 
 const MARKERS = [
-  { id: 'pa-arrow-dark', color: '#6b7280' },
-  { id: 'pa-arrow-light', color: '#9ca3af' },
+  { id: 'pa-arrow-dark', color: '#e2e8f0' },
+  { id: 'pa-arrow-light', color: '#334155' },
   { id: 'pa-arrow-accent', color: '#22c55e' },
   { id: 'pa-arrow-loopback', color: '#f87171' },
 ];

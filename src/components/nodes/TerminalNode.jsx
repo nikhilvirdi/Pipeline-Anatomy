@@ -14,13 +14,15 @@ export default function TerminalNode({ id, data }) {
     ? 'bg-emerald-100/70 border-emerald-500 text-emerald-950 backdrop-blur-md'
     : 'bg-emerald-950/60 border-emerald-400 text-emerald-200 backdrop-blur-md';
 
+  const handleBg = data?.isLoopback ? '!bg-[#f87171]' : '!bg-accent';
+
   return (
     <div
       className={`px-6 py-2.5 rounded-full border-2 text-center shadow-md transition-all ${
         mirroredStyle || defaultStyle
       } ${dimClass} ${accentClass}`}
     >
-      <Handle type="target" position={handles.target} isConnectable={false} className="!bg-accent w-2.5 h-2.5 cursor-default" />
+      <Handle type="target" position={handles.target} isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1">
           {icons.map((icon, idx) => (
@@ -29,7 +31,7 @@ export default function TerminalNode({ id, data }) {
         </div>
       )}
       <div className="text-xs font-semibold select-none leading-tight">{label}</div>
-      <Handle type="source" position={handles.source} isConnectable={false} className="!bg-accent w-2.5 h-2.5 cursor-default" />
+      <Handle type="source" position={handles.source} isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
     </div>
   );
 }

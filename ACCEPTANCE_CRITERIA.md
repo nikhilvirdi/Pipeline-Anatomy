@@ -19,7 +19,7 @@ Checklist form of every locked decision. Use this to verify nothing was dropped 
 - [ ] Execute Tests split into run-unit-tests → run-integration-tests
 - [ ] Docker Hub split into package-container-image → push-image-docker-hub
 - [ ] Run Smoke Tests/Health Check split into run-smoke-tests → run-health-check
-- [ ] Pull-request-merged split resolved or explicitly left as single node (confirm with project owner — currently unresolved, see `DIAGRAM_FIXES.md`)
+- [x] Pull-request-merged split resolved: split into `pull-request-merged` → `pull-request-ci-trigger`, both in `diagram-data.json` and `node-cards.json`
 - [ ] No floating nodes — clean lanes per phase
 - [ ] Pipeline Stops (CI + CD) same shape/color
 - [ ] Post-Production Health Check rendered as decision (diamond), not rectangle
@@ -41,7 +41,7 @@ Checklist form of every locked decision. Use this to verify nothing was dropped 
 - [ ] Edges cannot be detached/reconnected by the user (graph structure immutable)
 - [ ] Connected edges auto-stretch/reroute as nodes move, staying attached to same endpoints
 - [ ] Hover (desktop) / tap (mobile) shows tooltip populated from `node-cards.json`
-- [ ] All 45 diagram nodes have a matching card entry
+- [ ] All 46 diagram nodes have a matching card entry (45 original + pull-request-ci-trigger)
 
 ## Interactivity Features
 - [ ] Click-to-focus: pan/zoom to node, dim unrelated nodes, highlight direct connections

@@ -1,0 +1,35 @@
+import React from 'react';
+import { Handle } from '@xyflow/react';
+
+import { useNodeHighlight } from '../../context/DiagramInteractionContext';
+import { getHandlePositions } from '../../utils/handlePositions';
+
+export default function TerminalNode({ id, data }) {
+  const { label, icons, mirroredStyle, theme, orientation } = data;
+  const isLight = theme === 'light';
+  const { dimClass, accentClass } = useNodeHighlight(id);
+  const handles = getHandlePositions(orientation);
+
+  const defaultStyle = isLight
+    ? 'bg-emerald-100/70 border-emerald-500 text-emerald-950 backdrop-blur-md'
+    : 'bg-emerald-950/60 border-emerald-400 text-emerald-200 backdrop-blur-md';
+
+  return (
+    <div
+      className={`px-6 py-2.5 rounded-full border-2 text-center shadow-md transition-all ${
+        mirroredStyle || defaultStyle
+      } ${dimClass} ${accentClass}`}
+    >
+      <Handle type="target" position={handles.target} isConnectable={false} className="!bg-accent w-2.5 h-2.5 cursor-default" />
+      {icons && icons.length > 0 && (
+        <div className="flex justify-center items-center gap-1.5 mb-1">
+          {icons.map((icon, idx) => (
+            <img key={idx} src={icon} alt="terminal-icon" className="w-5 h-5 object-contain" />
+          ))}
+        </div>
+      )}
+      <div className="text-xs font-semibold select-none leading-tight">{label}</div>
+      <Handle type="source" position={handles.source} isConnectable={false} className="!bg-accent w-2.5 h-2.5 cursor-default" />
+    </div>
+  );
+}

@@ -7,8 +7,8 @@
       "shape": "actor",
       "source": "authored-icon",
       "note": "Phase 2 layout gap: JSON had no x/y for this node (source XML had it at x=-167.5,y=220, feeding directly into 'Writing the Code', but that position no longer fits now that 3 new nodes sit in between). Repositioned as the start of a horizontal chain leading into writing-the-code; not an XML-derived position.",
-      "x": -680,
-      "y": 140
+      "x": 0,
+      "y": 100
     },
     {
       "id": "ideation",
@@ -17,8 +17,8 @@
       "shape": "rect",
       "source": "authored",
       "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": -510,
-      "y": 140
+      "x": 250,
+      "y": 20
     },
     {
       "id": "architecture",
@@ -27,8 +27,8 @@
       "shape": "rect",
       "source": "authored",
       "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": -340,
-      "y": 140
+      "x": 250,
+      "y": 100
     },
     {
       "id": "tech-stack-locked-in",
@@ -37,8 +37,8 @@
       "shape": "rect",
       "source": "authored",
       "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": -170,
-      "y": 140
+      "x": 250,
+      "y": 180
     },
     {
       "id": "writing-the-code",
@@ -46,8 +46,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 46.25,
-      "y": 140
+      "x": 550,
+      "y": 100
     },
     {
       "id": "local-testing",
@@ -56,8 +56,8 @@
       "shape": "rect",
       "source": "xml-corrected",
       "note": "source had typo 'Checls', corrected to 'Checks'",
-      "x": 31.25,
-      "y": 310
+      "x": 850,
+      "y": 100
     },
     {
       "id": "fail",
@@ -65,8 +65,8 @@
       "phase": "local-development",
       "shape": "decision",
       "source": "xml",
-      "x": 170,
-      "y": 480
+      "x": 1200,
+      "y": 85
     },
     {
       "id": "debug-fix-code",
@@ -74,8 +74,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": -110,
-      "y": 480
+      "x": 1520,
+      "y": 250
     },
     {
       "id": "commit-push-code",
@@ -83,8 +83,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 530,
-      "y": 310
+      "x": 1520,
+      "y": 20
     },
     {
       "id": "github",
@@ -92,8 +92,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 710,
-      "y": 310
+      "x": 1520,
+      "y": 140
     },
     {
       "id": "open-pull-request",
@@ -101,8 +101,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 712.5,
-      "y": 530
+      "x": 1850,
+      "y": 140
     },
     {
       "id": "pull-request-merged",
@@ -110,8 +110,18 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 940,
-      "y": 550
+      "x": 2150,
+      "y": 140
+    },
+    {
+      "id": "pull-request-ci-trigger",
+      "label": "CI Pipeline Trigger",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from pull-request-merged",
+      "x": 2450,
+      "y": 60
     },
     {
       "id": "checkout-source-code",
@@ -119,8 +129,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1230,
-      "y": 550
+      "x": 2450,
+      "y": 200
     },
     {
       "id": "ci-system",
@@ -128,8 +138,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1490,
-      "y": 512.5
+      "x": 2750,
+      "y": 120
     },
     {
       "id": "install-dependencies",
@@ -137,8 +147,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1497.5,
-      "y": 720
+      "x": 3100,
+      "y": 20
     },
     {
       "id": "build-the-application",
@@ -146,8 +156,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1497.5,
-      "y": 830
+      "x": 3100,
+      "y": 120
     },
     {
       "id": "security-scan-sast",
@@ -155,8 +165,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1680,
-      "y": 830
+      "x": 3100,
+      "y": 220
     },
     {
       "id": "run-unit-tests",
@@ -165,8 +175,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Execute Tests'",
-      "x": 1870,
-      "y": 800
+      "x": 3450,
+      "y": 20
     },
     {
       "id": "run-integration-tests",
@@ -175,8 +185,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Execute Tests'",
-      "x": 1870,
-      "y": 900
+      "x": 3450,
+      "y": 120
     },
     {
       "id": "code-coverage-check",
@@ -184,8 +194,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1870,
-      "y": 700
+      "x": 3450,
+      "y": 220
     },
     {
       "id": "store-artifact-in-registry",
@@ -193,8 +203,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1870,
-      "y": 547.5
+      "x": 3800,
+      "y": 120
     },
     {
       "id": "task-failed",
@@ -202,8 +212,8 @@
       "phase": "continuous-integration",
       "shape": "decision",
       "source": "xml",
-      "x": 1850,
-      "y": 320
+      "x": 4150,
+      "y": 105
     },
     {
       "id": "pipeline-stops-ci",
@@ -211,8 +221,8 @@
       "phase": "continuous-integration",
       "shape": "circle",
       "source": "xml",
-      "x": 1640,
-      "y": 160
+      "x": 4150,
+      "y": 270
     },
     {
       "id": "developer-fixes-ci",
@@ -220,8 +230,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 1635.31,
-      "y": -64.38
+      "x": 4430,
+      "y": 270
     },
     {
       "id": "cd-system",
@@ -229,8 +239,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 2640,
-      "y": 330
+      "x": 4450,
+      "y": 20
     },
     {
       "id": "manual-approval-gate",
@@ -238,17 +248,18 @@
       "phase": "continuous-delivery-deployment",
       "shape": "decision",
       "source": "xml",
-      "x": 2623.13,
-      "y": 530
+      "x": 4800,
+      "y": 105
     },
     {
       "id": "pipeline-stops-cd",
       "label": "Pipeline Stops",
       "phase": "continuous-delivery-deployment",
-      "shape": "rect",
-      "source": "xml",
-      "x": 2330,
-      "y": 575
+      "shape": "circle",
+      "source": "xml-corrected",
+      "note": "shape corrected from 'rect' to 'circle' to match pipeline-stops-ci — DIAGRAM_FIXES.md requires both Pipeline Stops nodes to use the same shape",
+      "x": 5150,
+      "y": 270
     },
     {
       "id": "fetch-build-artifacts",
@@ -256,8 +267,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 2970,
-      "y": 575
+      "x": 5150,
+      "y": 20
     },
     {
       "id": "inject-config-secrets",
@@ -265,8 +276,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 3060,
-      "y": 340
+      "x": 5500,
+      "y": 120
     },
     {
       "id": "package-container-image",
@@ -275,8 +286,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Docker Hub'",
-      "x": 3200,
-      "y": 300
+      "x": 5850,
+      "y": 20
     },
     {
       "id": "push-image-docker-hub",
@@ -285,8 +296,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Docker Hub'",
-      "x": 3340,
-      "y": 340
+      "x": 5850,
+      "y": 120
     },
     {
       "id": "pull-image-and-deploy",
@@ -294,8 +305,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 3480,
-      "y": 490
+      "x": 5850,
+      "y": 220
     },
     {
       "id": "staging-server",
@@ -303,8 +314,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 3660,
-      "y": 320
+      "x": 6200,
+      "y": 60
     },
     {
       "id": "run-smoke-tests",
@@ -313,8 +324,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Run Smoke Tests / Health Check'",
-      "x": 3910,
-      "y": 270
+      "x": 6200,
+      "y": 180
     },
     {
       "id": "run-health-check",
@@ -323,8 +334,8 @@
       "shape": "rect",
       "source": "authored-split",
       "note": "split from source node 'Run Smoke Tests / Health Check'",
-      "x": 3910,
-      "y": 350
+      "x": 6550,
+      "y": 120
     },
     {
       "id": "all-checks-pass",
@@ -332,8 +343,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "decision",
       "source": "xml",
-      "x": 4140,
-      "y": 100
+      "x": 6900,
+      "y": 105
     },
     {
       "id": "notify-developer-team",
@@ -341,8 +352,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 3770,
-      "y": 45
+      "x": 7250,
+      "y": 270
     },
     {
       "id": "developer-fixes-cd",
@@ -350,8 +361,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 3460,
-      "y": 50
+      "x": 7530,
+      "y": 270
     },
     {
       "id": "deployment-strategy",
@@ -359,8 +370,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 4440,
-      "y": 90
+      "x": 7250,
+      "y": 20
     },
     {
       "id": "automated-manual-deployment-production",
@@ -368,8 +379,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 4720,
-      "y": 100
+      "x": 7600,
+      "y": 120
     },
     {
       "id": "post-production-health-check",
@@ -378,8 +389,8 @@
       "shape": "decision",
       "source": "xml-treated-as-decision",
       "note": "drawn as a rectangle in source, treated as the 5th decision point per locked decision",
-      "x": 4890,
-      "y": -90
+      "x": 7950,
+      "y": 105
     },
     {
       "id": "rollback",
@@ -387,8 +398,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 4290,
-      "y": -70
+      "x": 7950,
+      "y": 270
     },
     {
       "id": "end-users",
@@ -396,8 +407,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 5230,
-      "y": -90
+      "x": 8300,
+      "y": 100
     },
     {
       "id": "notify-team-success",
@@ -405,8 +416,8 @@
       "phase": "production",
       "shape": "circle",
       "source": "xml",
-      "x": 5440,
-      "y": -95
+      "x": 8700,
+      "y": 20
     },
     {
       "id": "monitoring-observability",
@@ -414,8 +425,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 5220,
-      "y": 90
+      "x": 8300,
+      "y": 250
     }
   ],
   "edges": [
@@ -472,6 +483,10 @@
     },
     {
       "from": "pull-request-merged",
+      "to": "pull-request-ci-trigger"
+    },
+    {
+      "from": "pull-request-ci-trigger",
       "to": "checkout-source-code"
     },
     {
@@ -614,12 +629,18 @@
     },
     {
       "from": "post-production-health-check",
-      "to": "end-users"
+      "to": "end-users",
+      "label": "Pass"
+    },
+    {
+      "from": "post-production-health-check",
+      "to": "notify-team-success",
+      "label": "Pass"
     },
     {
       "from": "monitoring-observability",
       "to": "end-users",
-      "note": "source XML draws this one-directional; PROJECT.md described it as bidirectional \u2014 flagged discrepancy, kept as one-directional per source"
+      "note": "source XML draws this one-directional; PROJECT.md described it as bidirectional — flagged discrepancy, kept as one-directional per source"
     }
   ],
   "floatingNotes": [

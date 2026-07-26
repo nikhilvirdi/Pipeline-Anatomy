@@ -154,10 +154,8 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
 
     if (DECISION_NODE_IDS.has(edge.from)) {
       if (edge.from === 'post-production-health-check') {
-        if (edge.to === 'notify-team-success') {
+        if (edge.to === 'end-users') {
           sourceHandle = 'top';
-        } else if (edge.to === 'end-users') {
-          sourceHandle = 'right';
         } else if (edge.to === 'rollback') {
           sourceHandle = 'bottom';
         }
@@ -176,6 +174,11 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
       ) {
         sourceHandle = 'top';
       }
+    }
+
+    if (edge.from === 'end-users' && edge.to === 'monitoring-observability') {
+      sourceHandle = 'bottom';
+      targetHandle = 'top';
     }
 
     if (

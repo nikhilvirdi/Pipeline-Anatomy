@@ -17,7 +17,7 @@ export default function ProcessNode({ id, data }) {
       } ${dimClass} ${accentClass}`}
     >
       <Handle type="target" position={Position.Left} id="left" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
-      <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-3 h-3 opacity-0 pointer-events-none`} />
+      <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default ${id === 'monitoring-observability' ? '' : 'opacity-0 pointer-events-none'}`} />
       <Handle type="target" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-3 h-3 opacity-0 pointer-events-none`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1.5">
@@ -28,6 +28,7 @@ export default function ProcessNode({ id, data }) {
       )}
       <div className="text-[15px] font-bold leading-snug select-none">{label}</div>
       <Handle type="source" position={Position.Right} id="right" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
+      <Handle type="source" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default ${id === 'end-users' ? '' : 'opacity-0 pointer-events-none'}`} />
     </div>
   );
 }

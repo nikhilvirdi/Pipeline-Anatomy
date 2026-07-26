@@ -18,20 +18,20 @@ export default function TerminalNode({ id, data }) {
 
   return (
     <div
-      className={`px-6 py-2.5 rounded-full border-2 text-center shadow-md transition-all ${
+      className={`px-8 py-3.5 rounded-full border-2 text-center shadow-md transition-all ${
         mirroredStyle || defaultStyle
       } ${dimClass} ${accentClass}`}
     >
-      <Handle type="target" position={handles.target} isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
+      <Handle type="target" position={handles.target} isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1">
           {icons.map((icon, idx) => (
-            <img key={idx} src={icon} alt="terminal-icon" className="w-5 h-5 object-contain" />
+            <img key={idx} src={icon} alt="terminal-icon" className="w-6 h-6 object-contain" />
           ))}
         </div>
       )}
-      <div className="text-xs font-semibold select-none leading-tight">{label}</div>
-      <Handle type="source" position={handles.source} isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
+      <div className="text-[15px] font-bold select-none leading-tight">{label}</div>
+      <Handle type="source" position={handles.source} isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
     </div>
   );
 }

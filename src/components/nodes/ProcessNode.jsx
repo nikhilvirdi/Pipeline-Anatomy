@@ -12,22 +12,22 @@ export default function ProcessNode({ id, data }) {
 
   return (
     <div
-      className={`px-4 py-3 min-w-[150px] max-w-[230px] text-center transition-all ${
+      className={`px-5 py-4 min-w-[190px] max-w-[280px] text-center transition-all ${
         mirroredStyle || glassClass
       } ${dimClass} ${accentClass}`}
     >
-      <Handle type="target" position={Position.Left} id="left" isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
-      <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-2.5 h-2.5 opacity-0 pointer-events-none`} />
-      <Handle type="target" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-2.5 h-2.5 opacity-0 pointer-events-none`} />
+      <Handle type="target" position={Position.Left} id="left" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
+      <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-3 h-3 opacity-0 pointer-events-none`} />
+      <Handle type="target" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-3 h-3 opacity-0 pointer-events-none`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1.5">
           {icons.map((icon, idx) => (
-            <img key={idx} src={icon} alt="node-icon" className="w-5 h-5 object-contain" />
+            <img key={idx} src={icon} alt="node-icon" className="w-6 h-6 object-contain" />
           ))}
         </div>
       )}
-      <div className="text-xs font-medium leading-tight select-none">{label}</div>
-      <Handle type="source" position={Position.Right} id="right" isConnectable={false} className={`${handleBg} w-2.5 h-2.5 cursor-default`} />
+      <div className="text-[15px] font-bold leading-snug select-none">{label}</div>
+      <Handle type="source" position={Position.Right} id="right" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
     </div>
   );
 }

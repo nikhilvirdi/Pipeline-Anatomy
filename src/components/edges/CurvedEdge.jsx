@@ -72,8 +72,8 @@ export default function CurvedEdge({
   // red dash in every state: THEME_TOKENS.md reserves accent green for
   // active/success, so a highlighted failure path must not turn green.
   const style = isLoopback
-    ? { stroke: LOOPBACK, strokeWidth: 2, strokeDasharray: '6 4' }
-    : { stroke: defaultEdgeColor, strokeWidth: 2 };
+    ? { stroke: LOOPBACK, strokeWidth: 2.75, strokeDasharray: '6 4' }
+    : { stroke: defaultEdgeColor, strokeWidth: 2.75 };
 
   style.transition = 'opacity 300ms ease-out, stroke 200ms ease-out';
 
@@ -96,12 +96,12 @@ export default function CurvedEdge({
     case 'downstream':
     case 'direct':
       if (!isLoopback) style.stroke = ACCENT;
-      style.strokeWidth = 2.5;
+      style.strokeWidth = 3.25;
       style.filter = ACCENT_GLOW;
       break;
     case 'upstream':
       if (!isLoopback) style.stroke = ACCENT;
-      style.strokeWidth = 2.5;
+      style.strokeWidth = 3.25;
       style.opacity = 0.55;
       break;
     default:
@@ -129,7 +129,7 @@ export default function CurvedEdge({
               opacity: highlight === 'dimmed' ? 0.15 : 1,
               transition: 'opacity 300ms ease-out',
             }}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase border z-10 ${labelBg}`}
+            className={`px-2.5 py-0.5 rounded text-[12px] font-extrabold tracking-wider uppercase border shadow-sm z-10 ${labelBg}`}
           >
             {label}
           </div>

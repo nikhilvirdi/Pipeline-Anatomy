@@ -74,8 +74,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1520,
-      "y": 250
+      "x": 1350,
+      "y": 270
     },
     {
       "id": "commit-push-code",
@@ -231,7 +231,7 @@
       "shape": "rect",
       "source": "xml",
       "x": 4730,
-      "y": 350
+      "y": 420
     },
     {
       "id": "cd-system",
@@ -362,7 +362,7 @@
       "shape": "rect",
       "source": "xml",
       "x": 7530,
-      "y": 270
+      "y": 420
     },
     {
       "id": "deployment-strategy",

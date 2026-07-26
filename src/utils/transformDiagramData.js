@@ -114,7 +114,7 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
       'local-development': { x: -20, y: -70, step: 'PHASE 01' },
       'continuous-integration': { x: 2500, y: -70, step: 'PHASE 02' },
       'continuous-delivery-deployment': { x: 5120, y: -70, step: 'PHASE 03' },
-      'production': { x: 7920, y: -70, step: 'PHASE 04' },
+      'production': { x: 7580, y: -70, step: 'PHASE 04' },
     };
     const def = headerDefs[phase.id] || { x: 0, y: idx * 400, step: `PHASE 0${idx + 1}` };
     const phaseCard = phaseCards[phase.id];

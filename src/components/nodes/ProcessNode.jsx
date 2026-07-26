@@ -18,7 +18,7 @@ export default function ProcessNode({ id, data }) {
     >
       <Handle type="target" position={Position.Left} id="left" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
       <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default ${id === 'monitoring-observability' ? '' : 'opacity-0 pointer-events-none'}`} />
-      <Handle type="target" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-3 h-3 opacity-0 pointer-events-none`} />
+      <Handle type="target" position={Position.Bottom} id="bottom" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default ${id === 'cd-system' || id === 'commit-push-code' || id === 'local-testing' ? '' : 'opacity-0 pointer-events-none'}`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1.5">
           {icons.map((icon, idx) => (

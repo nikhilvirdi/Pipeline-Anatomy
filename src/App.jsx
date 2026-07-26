@@ -33,6 +33,7 @@ import CurvedEdge from './components/edges/CurvedEdge';
 import EdgeMarkers from './components/EdgeMarkers';
 import NodeTooltip from './components/NodeTooltip';
 import FocusedNodeBar from './components/FocusedNodeBar';
+import PhaseDividers from './components/PhaseDividers';
 import Toolbar from './components/Toolbar/Toolbar';
 
 const nodeTypes = {
@@ -563,6 +564,7 @@ function DiagramCanvas() {
             onNodeClick={handleNodeClick}
             onPaneClick={handlePaneClick}
           >
+            <PhaseDividers theme={theme} orientation={orientation} />
             <DepthOfField containerRef={canvasRef} />
             <EdgeMarkers />
             <Background color="transparent" />

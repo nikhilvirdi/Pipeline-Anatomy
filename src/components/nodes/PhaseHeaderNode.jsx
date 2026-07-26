@@ -5,10 +5,10 @@ export default function PhaseHeaderNode({ data }) {
   const isLight = theme === 'light';
 
   return (
-    <div className="w-[2800px] select-none pointer-events-none mb-4">
-      <div className="flex items-center gap-3">
+    <div className="w-[2800px] select-none pointer-events-auto mb-4">
+      <div className="flex items-center gap-3 cursor-pointer inline-flex">
         <span
-          className={`px-2.5 py-1 rounded text-xs font-extrabold tracking-wider uppercase border shadow-sm ${
+          className={`px-4 py-1.5 rounded-md text-lg font-black tracking-widest uppercase border shadow-md ${
             isLight
               ? 'bg-emerald-100 border-emerald-400 text-emerald-800'
               : 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
@@ -17,7 +17,7 @@ export default function PhaseHeaderNode({ data }) {
           {step || 'PHASE'}
         </span>
         <h2
-          className={`text-base font-bold tracking-wide uppercase ${
+          className={`text-3xl font-black tracking-wider uppercase ${
             isLight ? 'text-slate-800' : 'text-slate-200'
           }`}
         >

@@ -2,6 +2,7 @@ import { Position } from '@xyflow/react';
 
 import diagramData from '../../diagram/diagram-data.json';
 import nodeCards from '../../node-cards.json';
+import phaseCards from '../../phase-cards.json';
 import { getNodeIcons } from './iconMap';
 import { getVerticalPositions } from './verticalLayout';
 
@@ -116,6 +117,7 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
       'production': { x: 7580, y: -70, step: 'PHASE 04' },
     };
     const def = headerDefs[phase.id] || { x: 0, y: idx * 400, step: `PHASE 0${idx + 1}` };
+    const phaseCard = phaseCards[phase.id];
     return {
       id: `header-${phase.id}`,
       type: 'phaseHeader',
@@ -123,11 +125,13 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
       selectable: false,
       draggable: false,
       data: {
-        label: phase.label,
+        label: phaseCard?.title || phase.label,
         phase: phase.id,
         step: def.step,
         theme,
         orientation,
+        title: phaseCard?.title || phase.label,
+        bullets: phaseCard?.bullets || [],
       },
     };
   });

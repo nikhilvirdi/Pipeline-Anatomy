@@ -16,6 +16,7 @@ import { DiagramInteractionProvider } from './context/DiagramInteractionContext'
 import { getTransformedDiagramData } from './utils/transformDiagramData';
 import { computeHighlight } from './utils/highlightState';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
+import { useNodeUrl } from './hooks/useNodeUrl';
 import {
   SMALL_SCREEN_QUERY,
   TOUCH_QUERY,
@@ -31,6 +32,7 @@ import PhaseHeaderNode from './components/nodes/PhaseHeaderNode';
 import CurvedEdge from './components/edges/CurvedEdge';
 import EdgeMarkers from './components/EdgeMarkers';
 import NodeTooltip from './components/NodeTooltip';
+import FocusedNodeBar from './components/FocusedNodeBar';
 import Toolbar from './components/Toolbar/Toolbar';
 
 const nodeTypes = {
@@ -241,6 +243,35 @@ function DiagramCanvas() {
     setTooltip(null);
   }, []);
 
+  /* ------------------------------------------------------------ URL sync */
+
+  // Set of all valid node ids — used to validate the ?node= startup param.
+  const validNodeIds = useMemo(
+    () => new Set(base.nodes.map((n) => n.id)),
+    [base.nodes]
+  );
+
+  // Syncs focusedNodeId <-> ?node= query param via history.pushState.
+  const { startupNodeId } = useNodeUrl(focusedNodeId, validNodeIds);
+
+  // On first render, if a valid ?node= param was present, focus that node.
+  const startupAppliedRef = useRef(false);
+  useEffect(() => {
+    if (startupAppliedRef.current) return;
+    if (!startupNodeId) {
+      startupAppliedRef.current = true;
+      return;
+    }
+    // Nodes are not measured until after the first layout pass, so we wait
+    // one animation frame before calling fitView on the specific node.
+    const id = window.requestAnimationFrame(() => {
+      startupAppliedRef.current = true;
+      focusNode(startupNodeId);
+    });
+    return () => window.cancelAnimationFrame(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startupNodeId]);
+
   /* -------------------------------------------------------- pointer input */
 
   // Touch devices emulate mouseover/mouseleave on tap, which would fight the
@@ -315,6 +346,9 @@ function DiagramCanvas() {
     },
     [focusNode, focusedNodeId, isTouch]
   );
+
+  // Clearing focus also removes the ?node= param (handled inside useNodeUrl).
+  // We re-use the existing clearFocus; URL cleanup is automatic via the effect.
 
   // Tap/click anywhere off a node dismisses the tooltip and the highlight.
   const handlePaneClick = useCallback(() => {
@@ -457,6 +491,14 @@ function DiagramCanvas() {
         >
           <NodeTooltip node={tooltipNode} theme={theme} />
         </div>
+      )}
+
+      {/* Focused-node action bar: copy-link, only visible in click-focus state */}
+      {focusedNodeId && (
+        <FocusedNodeBar
+          label={focusedLabel}
+          theme={theme}
+        />
       )}
 
       {/* Floating Toolbar (Phase 6) */}

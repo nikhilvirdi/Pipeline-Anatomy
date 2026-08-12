@@ -1,1 +1,0 @@
-A pull request (PR) on GitHub is a collaborative feature that allows you to propose changes to a project's codebase and ask others to review and approve them before they are merged into the main project.

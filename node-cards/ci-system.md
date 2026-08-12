@@ -1,1 +1,0 @@
-A Machine / Server. The tool actually running the pipeline, such as Jenkins, GitHub Actions, or GitLab CI/CD. Different projects use different ones, but the job is the same: orchestrate the stages that follow.

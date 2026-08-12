@@ -1,3 +1,4 @@
+```gitignore
 # Dependencies
 node_modules/
 
@@ -11,9 +12,8 @@ build/
 .env.local
 .env.*.local
 
-# Editor/IDE
-.vscode/*
-!.vscode/extensions.json
+# Editor / IDE
+.vscode/
 .idea/
 *.suo
 *.ntvs*
@@ -40,5 +40,28 @@ pnpm-debug.log*
 # Testing
 coverage/
 
-# Antigravity / agent-specific caches (adjust if not applicable)
+# Antigravity / agent-specific files
 .antigravity/
+
+# Internal development files
+scratch/
+scripts/
+diagram/
+node-cards/
+
+# Internal project data / configuration
+phase-cards.json
+node-cards.json
+
+# Internal documentation
+ACCEPTANCE_CRITERIA.md
+CLAUDE.md
+DIAGRAM_FIXES.md
+EDGE_RULES.md
+FOLDER_STRUCTURE.md
+NODE_TYPES.md
+PROJECT_BRIEF.md
+THEME_TOKENS.md
+UI_SPEC.md
+WORKFLOW.md
+```

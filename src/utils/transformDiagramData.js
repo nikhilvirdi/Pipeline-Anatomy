@@ -14,36 +14,6 @@ const DECISION_NODE_IDS = new Set([
   'post-production-health-check',
 ]);
 
-const MIRRORED_PAIR_STYLES = {
-  // Neutral slate/charcoal for pipeline stops (distinct from loopback red #f87171)
-  'pipeline-stops-ci': {
-    dark: 'bg-slate-900/80 border-slate-500 text-slate-300',
-    light: 'bg-slate-100/90 border-slate-400 text-slate-800',
-  },
-  'pipeline-stops-cd': {
-    dark: 'bg-slate-900/80 border-slate-500 text-slate-300',
-    light: 'bg-slate-100/90 border-slate-400 text-slate-800',
-  },
-  // Amber theme for developer fixes
-  'developer-fixes-ci': {
-    dark: 'bg-amber-950/60 border-amber-500 text-amber-200',
-    light: 'bg-amber-100/80 border-amber-500 text-amber-900',
-  },
-  'developer-fixes-cd': {
-    dark: 'bg-amber-950/60 border-amber-500 text-amber-200',
-    light: 'bg-amber-100/80 border-amber-500 text-amber-900',
-  },
-  // Cyan/sky theme for notification nodes
-  'notify-team-success': {
-    dark: 'bg-cyan-950/60 border-cyan-400 text-cyan-200',
-    light: 'bg-cyan-100/80 border-cyan-500 text-cyan-900',
-  },
-  'notify-developer-team': {
-    dark: 'bg-cyan-950/60 border-cyan-400 text-cyan-200',
-    light: 'bg-cyan-100/80 border-cyan-500 text-cyan-900',
-  },
-};
-
 /**
  * Canonical React Flow edge id for a diagram-data edge. Shared so graph
  * traversal can name the same edges the transform produces, rather than
@@ -72,8 +42,6 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     }
 
     const icons = getNodeIcons(node.id, theme);
-    const pairStyleObj = MIRRORED_PAIR_STYLES[node.id];
-    const mirroredStyle = pairStyleObj ? pairStyleObj[theme] : null;
 
     // Handle sides must match these, or edges detach from the dots they point
     // at — the node components read `data.orientation` to stay in sync.
@@ -100,7 +68,6 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         source: node.source,
         note: node.note,
         icons,
-        mirroredStyle,
         theme,
         orientation,
         isLoopback: isLoopbackNode,

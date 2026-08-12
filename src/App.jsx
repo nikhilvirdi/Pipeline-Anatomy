@@ -454,12 +454,16 @@ function DiagramCanvas() {
   const isLight = theme === 'light';
   const canvasClass = isLight ? 'canvas-dot-grid-light' : 'canvas-dot-grid-dark';
 
+  // Hardcoded hex values — var() doesn't resolve inside React Flow's SVG
+  // minimap renderer, so CSS custom properties must not be used here.
   const minimapNodeColor = useCallback(
     (node) => {
       const state = interaction.nodeStates.get(node.id);
-      if (state === 'focused') return '#22c55e';
-      if (state === 'neighbor' || state === 'related') return '#86efac';
-      return isLight ? '#94a3b8' : '#475569';
+      if (state === 'focused')
+        return isLight ? '#6B6558' : '#9C9585';           // connector-active
+      if (state === 'neighbor' || state === 'related')
+        return isLight ? '#8A6D3B' : '#C9A24B';           // accent-primary
+      return '#3A362C';                                   // node-border (both modes)
     },
     [interaction.nodeStates, isLight]
   );
@@ -532,6 +536,7 @@ function DiagramCanvas() {
       >
         <DiagramInteractionProvider value={interaction}>
           <ReactFlow
+            colorMode={theme}
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -576,9 +581,9 @@ function DiagramCanvas() {
                 className={isLight ? 'rf-minimap-light' : 'rf-minimap-dark'}
                 bgColor="transparent"
                 nodeColor={minimapNodeColor}
-                nodeStrokeColor={isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)'}
+                nodeStrokeWidth={0}
                 maskColor={
-                  isLight ? 'rgba(245, 245, 245, 0.7)' : 'rgba(10, 10, 10, 0.7)'
+                  isLight ? 'rgba(58,54,44,0.07)' : 'rgba(0,0,0,0.25)'
                 }
               />
             )}

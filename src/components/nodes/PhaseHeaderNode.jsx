@@ -1,34 +1,23 @@
 import React from 'react';
 
 export default function PhaseHeaderNode({ data }) {
-  const { label, step, theme } = data;
-  const isLight = theme === 'light';
+  const { label, step } = data;
 
   return (
     <div className="w-[2800px] select-none pointer-events-auto mb-4">
       <div className="flex items-center gap-3 cursor-pointer inline-flex">
         <span
-          className={`px-4 py-1.5 rounded-md text-lg font-black tracking-widest uppercase border shadow-md ${
-            isLight
-              ? 'bg-emerald-100 border-emerald-400 text-emerald-800'
-              : 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
-          }`}
+          className="px-4 py-1.5 rounded-[3px] text-lg font-sans font-semibold tracking-widest uppercase border shadow-md bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] text-accent-primary"
         >
           {step || 'PHASE'}
         </span>
         <h2
-          className={`text-3xl font-black tracking-wider uppercase ${
-            isLight ? 'text-slate-800' : 'text-slate-200'
-          }`}
+          className="text-3xl font-serif font-semibold tracking-wider uppercase text-primary"
         >
           {label}
         </h2>
         <div
-          className={`flex-1 h-[2px] rounded-full ${
-            isLight
-              ? 'bg-gradient-to-r from-emerald-400/50 via-slate-300 to-transparent'
-              : 'bg-gradient-to-r from-emerald-500/40 via-slate-700 to-transparent'
-          }`}
+          className="flex-1 h-[2px] rounded-full bg-gradient-to-r from-[color-mix(in_srgb,var(--accent-primary)_40%,transparent)] via-border-node to-transparent"
         />
       </div>
     </div>

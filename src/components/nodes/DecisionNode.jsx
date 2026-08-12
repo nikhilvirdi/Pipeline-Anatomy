@@ -4,19 +4,22 @@ import { Handle, Position } from '@xyflow/react';
 import { useNodeHighlight } from '../../context/DiagramInteractionContext';
 
 export default function DecisionNode({ id, data }) {
-  const { label, icons, theme } = data;
-  const isLight = theme === 'light';
+  const { label, icons } = data;
   const { dimClass, accentClass } = useNodeHighlight(id);
 
+  const isError = id === 'fail' || id === 'task-failed';
+  
+  const handleBg = '!bg-text-muted border-none';
+
   return (
-    <div className={`relative w-40 h-40 flex items-center justify-center ${dimClass}`}>
+    <div className={`relative w-40 h-40 flex items-center justify-center ${dimClass} ${isError ? 'node-diamond--error' : ''}`}>
       {/* Target Handle on Left point */}
       <Handle
         type="target"
         position={Position.Left}
         id="left"
         isConnectable={false}
-        className="!bg-amber-400 w-3 h-3 z-20 cursor-default"
+        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
       />
 
       {/* Source Handle on Top point (No / Pass / Approved) */}
@@ -25,7 +28,7 @@ export default function DecisionNode({ id, data }) {
         position={Position.Top}
         id="top"
         isConnectable={false}
-        className="!bg-amber-400 w-3 h-3 z-20 cursor-default"
+        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
       />
 
       {/* Source Handle on Bottom point (Yes / Fail / Rejected) */}
@@ -34,7 +37,7 @@ export default function DecisionNode({ id, data }) {
         position={Position.Bottom}
         id="bottom"
         isConnectable={false}
-        className="!bg-amber-400 w-3 h-3 z-20 cursor-default"
+        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
       />
 
       {/* Source Handle on Right point */}
@@ -43,22 +46,20 @@ export default function DecisionNode({ id, data }) {
         position={Position.Right}
         id="right"
         isConnectable={false}
-        className="!bg-amber-400 w-3 h-3 z-20 cursor-default"
+        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
       />
 
-      {/* Rotated Diamond Background with Glassmorphism */}
+      {/* Rotated Diamond Background */}
       <div
-        className={`absolute w-[113px] h-[113px] rotate-45 border-2 border-amber-500 rounded-sm transition-all ${
-          isLight
-            ? 'bg-amber-100/80 shadow-md backdrop-blur-md'
-            : 'bg-slate-900/90 shadow-lg backdrop-blur-md'
+        className={`diamond-bg absolute w-[113px] h-[113px] rotate-45 border transition-all bg-node rounded-sm ${
+          isError ? 'border-accent-error' : 'border-node'
         } ${accentClass}`}
       />
 
       {/* Content rotated back */}
       <div
-        className={`relative z-10 p-2.5 text-center text-[15px] font-extrabold max-w-[115px] leading-tight select-none ${
-          isLight ? 'text-amber-950' : 'text-amber-300'
+        className={`diamond-text relative z-10 p-2.5 text-center text-[17px] font-serif font-semibold italic max-w-[115px] leading-tight select-none ${
+          isError ? 'text-accent-error' : 'text-primary'
         }`}
       >
         {icons && icons.length > 0 && (

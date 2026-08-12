@@ -3,10 +3,6 @@ import { getBezierPath, EdgeLabelRenderer, BaseEdge } from '@xyflow/react';
 
 import { useEdgeHighlight } from '../../context/DiagramInteractionContext';
 
-const ACCENT = '#22c55e';
-const LOOPBACK = '#f87171';
-const ACCENT_GLOW = 'drop-shadow(0 0 4px rgba(34, 197, 94, 0.55))';
-
 export default function CurvedEdge({
   id,
   sourceX,
@@ -20,7 +16,6 @@ export default function CurvedEdge({
 }) {
   const isLoopback = data?.isLoopback;
   const isBidirectional = data?.isBidirectional;
-  const isLight = data?.theme === 'light';
   const highlight = useEdgeHighlight(id);
 
   const isLongLoopback = isLoopback && sourceX - targetX > 300;
@@ -63,22 +58,43 @@ export default function CurvedEdge({
     labelY = bY;
   }
 
-  const defaultEdgeColor = isLight ? '#334155' : '#e2e8f0';
-  const labelBg = isLight
-    ? 'bg-white/90 border-slate-300 text-amber-900 shadow-sm'
-    : 'bg-slate-900/90 border-slate-700 text-amber-300 shadow-md';
-
-  // Base style first, then the highlight overlay. Loop-back edges keep their
-  // red dash in every state: THEME_TOKENS.md reserves accent green for
-  // active/success, so a highlighted failure path must not turn green.
+  // Base style
   const style = isLoopback
-    ? { stroke: LOOPBACK, strokeWidth: 2.75, strokeDasharray: '6 4' }
-    : { stroke: defaultEdgeColor, strokeWidth: 2.75 };
+    ? { stroke: 'var(--accent-error)', strokeWidth: 1.5, strokeDasharray: '6 4' }
+    : { stroke: 'var(--connector-line)', strokeWidth: 1.5 };
 
   style.transition = 'opacity 300ms ease-out, stroke 200ms ease-out';
 
+  // Highlight state overrides
+  switch (highlight) {
+    case 'dimmed':
+      style.opacity = 0.12;
+      break;
+    case 'downstream':
+    case 'direct':
+      if (!isLoopback) style.stroke = 'var(--connector-active)';
+      break;
+    case 'upstream':
+      if (!isLoopback) style.stroke = 'var(--connector-active)';
+      style.opacity = 0.55;
+      break;
+    default:
+      break;
+  }
+
+  // Determine Label Text Color
+  let labelColorClass = 'text-primary';
+  if (label) {
+    const upperLabel = label.toUpperCase();
+    if (['YES', 'PASS', 'APPROVED'].includes(upperLabel)) {
+      labelColorClass = 'text-accent-success';
+    } else if (['NO', 'REJECTED'].includes(upperLabel)) {
+      labelColorClass = 'text-accent-error';
+    }
+  }
+
   // Select arrowhead marker ID matching the edge state
-  let markerId = isLight ? 'pa-arrow-light' : 'pa-arrow-dark';
+  let markerId = 'pa-arrow-default';
   if (isLoopback) {
     markerId = 'pa-arrow-loopback';
   } else if (
@@ -89,26 +105,11 @@ export default function CurvedEdge({
     markerId = 'pa-arrow-accent';
   }
 
-  switch (highlight) {
-    case 'dimmed':
-      style.opacity = 0.12;
-      break;
-    case 'downstream':
-    case 'direct':
-      if (!isLoopback) style.stroke = ACCENT;
-      style.strokeWidth = 3.25;
-      style.filter = ACCENT_GLOW;
-      break;
-    case 'upstream':
-      if (!isLoopback) style.stroke = ACCENT;
-      style.strokeWidth = 3.25;
-      style.opacity = 0.55;
-      break;
-    default:
-      break;
-  }
-
   const markerEndUrl = `url(#${markerId})`;
+
+  const isHorizontal = sourcePosition === 'left' || sourcePosition === 'right';
+  const labelOffsetX = isHorizontal ? 0 : 12;
+  const labelOffsetY = isHorizontal ? -12 : 0;
 
   return (
     <>
@@ -124,12 +125,12 @@ export default function CurvedEdge({
           <div
             style={{
               position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              transform: `translate(-50%, -50%) translate(${labelX + labelOffsetX}px,${labelY + labelOffsetY}px)`,
               pointerEvents: highlight === 'dimmed' ? 'none' : 'all',
               opacity: highlight === 'dimmed' ? 0.15 : 1,
               transition: 'opacity 300ms ease-out',
             }}
-            className={`px-2.5 py-0.5 rounded text-[12px] font-extrabold tracking-wider uppercase border shadow-sm z-10 ${labelBg}`}
+            className={`edge-label ${labelColorClass}`}
           >
             {label}
           </div>

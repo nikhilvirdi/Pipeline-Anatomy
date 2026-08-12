@@ -2,19 +2,12 @@ import React from 'react';
 
 /**
  * Arrowhead definitions for every edge (EDGE_RULES.md "Arrowheads").
- *
- * Defined once here rather than via React Flow's per-edge `markerEnd` object,
- * because the arrow has to recolour with the edge: highlighted paths turn
- * accent green, and loop-backs must stay `loopback.DEFAULT` red in every state
- * so "retrying" never reads as "active". `CurvedEdge` picks the id per state.
- * Marker ids resolve document-wide, so this can live outside the flow's SVG.
  */
 
 const MARKERS = [
-  { id: 'pa-arrow-dark', color: '#e2e8f0' },
-  { id: 'pa-arrow-light', color: '#334155' },
-  { id: 'pa-arrow-accent', color: '#22c55e' },
-  { id: 'pa-arrow-loopback', color: '#f87171' },
+  { id: 'pa-arrow-default', color: 'var(--connector-line)' },
+  { id: 'pa-arrow-accent', color: 'var(--connector-active)' },
+  { id: 'pa-arrow-loopback', color: 'var(--accent-error)' },
 ];
 
 export default function EdgeMarkers() {

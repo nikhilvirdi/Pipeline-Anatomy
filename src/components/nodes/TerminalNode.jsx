@@ -5,24 +5,25 @@ import { useNodeHighlight } from '../../context/DiagramInteractionContext';
 import { getHandlePositions } from '../../utils/handlePositions';
 
 export default function TerminalNode({ id, data }) {
-  const { label, icons, mirroredStyle, theme, orientation } = data;
-  const isLight = theme === 'light';
+  const { label, icons, orientation } = data;
   const { dimClass, accentClass } = useNodeHighlight(id);
   const handles = getHandlePositions(orientation);
 
-  const defaultStyle = isLight
-    ? 'bg-emerald-100/70 border-emerald-500 text-emerald-950 backdrop-blur-md'
-    : 'bg-emerald-950/60 border-emerald-400 text-emerald-200 backdrop-blur-md';
+  const isSuccess = id === 'notify-team-success';
+  const isFail = id === 'notify-developer-team';
+  
+  const bgClass = isSuccess ? 'bg-[color-mix(in_srgb,var(--accent-success)_15%,transparent)] border-[color-mix(in_srgb,var(--accent-success)_30%,transparent)]' : 'bg-node border-node';
+  const textClass = 'text-primary';
 
-  const handleBg = data?.isLoopback ? '!bg-[#f87171]' : '!bg-accent';
+  const handleBg = isSuccess ? '!bg-accent-success' : isFail ? '!bg-accent-error' : '!bg-text-muted';
 
   return (
     <div
-      className={`px-8 py-3.5 rounded-full border-2 text-center shadow-md transition-all ${
-        mirroredStyle || defaultStyle
+      className={`px-8 py-3.5 rounded-full border text-center transition-all ${
+        bgClass
       } ${dimClass} ${accentClass}`}
     >
-      <Handle type="target" position={handles.target} isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
+      <Handle type="target" position={handles.target} isConnectable={false} className={`${handleBg} border-none w-3 h-3 cursor-default`} />
       {icons && icons.length > 0 && (
         <div className="flex justify-center items-center gap-1.5 mb-1">
           {icons.map((icon, idx) => (
@@ -30,8 +31,8 @@ export default function TerminalNode({ id, data }) {
           ))}
         </div>
       )}
-      <div className="text-[15px] font-bold select-none leading-tight">{label}</div>
-      <Handle type="source" position={handles.source} isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
+      <div className={`text-[15px] font-sans font-medium select-none leading-tight ${textClass}`}>{label}</div>
+      <Handle type="source" position={handles.source} isConnectable={false} className={`${handleBg} border-none w-3 h-3 cursor-default`} />
     </div>
   );
 }

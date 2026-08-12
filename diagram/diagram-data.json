@@ -1,0 +1,705 @@
+{
+  "nodes": [
+    {
+      "id": "developer",
+      "label": "Developer",
+      "phase": "local-development",
+      "shape": "actor",
+      "source": "authored-icon",
+      "note": "Phase 2 layout gap: JSON had no x/y for this node (source XML had it at x=-167.5,y=220, feeding directly into 'Writing the Code', but that position no longer fits now that 3 new nodes sit in between). Repositioned as the start of a horizontal chain leading into writing-the-code; not an XML-derived position.",
+      "x": 0,
+      "y": 100
+    },
+    {
+      "id": "ideation",
+      "label": "Ideation",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": 250,
+      "y": 20
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": 250,
+      "y": 100
+    },
+    {
+      "id": "tech-stack-locked-in",
+      "label": "Tech Stack Locked In",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "authored",
+      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
+      "x": 250,
+      "y": 180
+    },
+    {
+      "id": "writing-the-code",
+      "label": "Writing the Code",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml",
+      "x": 550,
+      "y": 100
+    },
+    {
+      "id": "local-testing",
+      "label": "Local Testing, Linters, Formatters, Type Checks, Builds etc.",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml-corrected",
+      "note": "source had typo 'Checls', corrected to 'Checks'",
+      "x": 850,
+      "y": 100
+    },
+    {
+      "id": "fail",
+      "label": "Fail",
+      "phase": "local-development",
+      "shape": "decision",
+      "source": "xml",
+      "x": 1200,
+      "y": 85
+    },
+    {
+      "id": "debug-fix-code",
+      "label": "Debug & Fix the Code",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml",
+      "x": 1350,
+      "y": 270
+    },
+    {
+      "id": "commit-push-code",
+      "label": "Commit & Push the Code",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml",
+      "x": 1520,
+      "y": 20
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml",
+      "x": 1520,
+      "y": 140
+    },
+    {
+      "id": "open-pull-request",
+      "label": "Open Pull Request",
+      "phase": "local-development",
+      "shape": "rect",
+      "source": "xml",
+      "x": 1850,
+      "y": 140
+    },
+    {
+      "id": "pull-request-merged",
+      "label": "Pull Request is Merged",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 2150,
+      "y": 140
+    },
+    {
+      "id": "pull-request-ci-trigger",
+      "label": "CI Pipeline Trigger",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from pull-request-merged",
+      "x": 2450,
+      "y": 60
+    },
+    {
+      "id": "checkout-source-code",
+      "label": "Checkout Source Code",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 2450,
+      "y": 200
+    },
+    {
+      "id": "ci-system",
+      "label": "CI System: Jenkins, GitHub Actions, GitLab CI/CD",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 2750,
+      "y": 120
+    },
+    {
+      "id": "install-dependencies",
+      "label": "Install Dependencies",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 3100,
+      "y": 20
+    },
+    {
+      "id": "build-the-application",
+      "label": "Build the Application",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 3100,
+      "y": 120
+    },
+    {
+      "id": "security-scan-sast",
+      "label": "Security Scan (SAST)",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 3100,
+      "y": 220
+    },
+    {
+      "id": "run-unit-tests",
+      "label": "Run Unit Tests",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Execute Tests'",
+      "x": 3450,
+      "y": 20
+    },
+    {
+      "id": "run-integration-tests",
+      "label": "Run Integration Tests",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Execute Tests'",
+      "x": 3450,
+      "y": 120
+    },
+    {
+      "id": "code-coverage-check",
+      "label": "Code Coverage Check",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 3450,
+      "y": 220
+    },
+    {
+      "id": "store-artifact-in-registry",
+      "label": "Store Artifact in Registry",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 3800,
+      "y": 120
+    },
+    {
+      "id": "task-failed",
+      "label": "Task Failed",
+      "phase": "continuous-integration",
+      "shape": "decision",
+      "source": "xml",
+      "x": 4150,
+      "y": 105
+    },
+    {
+      "id": "pipeline-stops-ci",
+      "label": "Pipeline Stops",
+      "phase": "continuous-integration",
+      "shape": "circle",
+      "source": "xml",
+      "x": 4450,
+      "y": 270
+    },
+    {
+      "id": "developer-fixes-ci",
+      "label": "Developer fixes the issue and pushes new code & commit",
+      "phase": "continuous-integration",
+      "shape": "rect",
+      "source": "xml",
+      "x": 4730,
+      "y": 420
+    },
+    {
+      "id": "cd-system",
+      "label": "CD System: Jenkins, GitHub Actions, GitLab CI/CD",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 4450,
+      "y": 20
+    },
+    {
+      "id": "manual-approval-gate",
+      "label": "Manual Approval Gate?",
+      "phase": "continuous-delivery-deployment",
+      "shape": "decision",
+      "source": "xml",
+      "x": 4800,
+      "y": 105
+    },
+    {
+      "id": "pipeline-stops-cd",
+      "label": "Pipeline Stops",
+      "phase": "continuous-delivery-deployment",
+      "shape": "circle",
+      "source": "xml-corrected",
+      "note": "shape corrected from 'rect' to 'circle' to match pipeline-stops-ci — DIAGRAM_FIXES.md requires both Pipeline Stops nodes to use the same shape",
+      "x": 5150,
+      "y": 270
+    },
+    {
+      "id": "fetch-build-artifacts",
+      "label": "Fetch Build Artifacts",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 5150,
+      "y": 20
+    },
+    {
+      "id": "inject-config-secrets",
+      "label": "Inject Config & Secrets",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 5500,
+      "y": 120
+    },
+    {
+      "id": "package-container-image",
+      "label": "Package into Container Image",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Docker Hub'",
+      "x": 5850,
+      "y": 20
+    },
+    {
+      "id": "push-image-docker-hub",
+      "label": "Push Image to Docker Hub",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Docker Hub'",
+      "x": 5850,
+      "y": 120
+    },
+    {
+      "id": "pull-image-and-deploy",
+      "label": "Pull the image and deploy",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 5850,
+      "y": 220
+    },
+    {
+      "id": "staging-server",
+      "label": "Staging Server",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 6200,
+      "y": 60
+    },
+    {
+      "id": "run-smoke-tests",
+      "label": "Run Smoke Tests",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Run Smoke Tests / Health Check'",
+      "x": 6200,
+      "y": 180
+    },
+    {
+      "id": "run-health-check",
+      "label": "Run Health Check",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "authored-split",
+      "note": "split from source node 'Run Smoke Tests / Health Check'",
+      "x": 6550,
+      "y": 120
+    },
+    {
+      "id": "all-checks-pass",
+      "label": "All Checks Pass",
+      "phase": "continuous-delivery-deployment",
+      "shape": "decision",
+      "source": "xml",
+      "x": 6900,
+      "y": 105
+    },
+    {
+      "id": "notify-developer-team",
+      "label": "Notify Developer Team",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 7250,
+      "y": 270
+    },
+    {
+      "id": "developer-fixes-cd",
+      "label": "Developer fixes",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 7530,
+      "y": 420
+    },
+    {
+      "id": "deployment-strategy",
+      "label": "Deployment Strategy: Blue-Green / Canary / Rolling / Recreate",
+      "phase": "continuous-delivery-deployment",
+      "shape": "rect",
+      "source": "xml",
+      "x": 7250,
+      "y": 20
+    },
+    {
+      "id": "automated-manual-deployment-production",
+      "label": "Automated / Manual Deployment (Production)",
+      "phase": "production",
+      "shape": "rect",
+      "source": "xml",
+      "x": 7600,
+      "y": 120
+    },
+    {
+      "id": "post-production-health-check",
+      "label": "Post-Production Health Check",
+      "phase": "production",
+      "shape": "decision",
+      "source": "xml-treated-as-decision",
+      "note": "drawn as a rectangle in source, treated as the 5th decision point per locked decision",
+      "x": 7950,
+      "y": 105
+    },
+    {
+      "id": "rollback",
+      "label": "Rollback",
+      "phase": "production",
+      "shape": "rect",
+      "source": "xml",
+      "x": 8300,
+      "y": 400
+    },
+    {
+      "id": "end-users",
+      "label": "End Users",
+      "phase": "production",
+      "shape": "rect",
+      "source": "xml",
+      "x": 8300,
+      "y": 100
+    },
+    {
+      "id": "notify-team-success",
+      "label": "Notify Team: Success",
+      "phase": "production",
+      "shape": "circle",
+      "source": "xml",
+      "x": 8700,
+      "y": 20
+    },
+    {
+      "id": "monitoring-observability",
+      "label": "Monitoring & Observability",
+      "phase": "production",
+      "shape": "rect",
+      "source": "xml",
+      "x": 8300,
+      "y": 250
+    }
+  ],
+  "edges": [
+    {
+      "from": "developer",
+      "to": "ideation",
+      "note": "rerouted: source XML connected developer directly to 'Writing the Code'"
+    },
+    {
+      "from": "ideation",
+      "to": "architecture"
+    },
+    {
+      "from": "architecture",
+      "to": "tech-stack-locked-in"
+    },
+    {
+      "from": "tech-stack-locked-in",
+      "to": "writing-the-code"
+    },
+    {
+      "from": "writing-the-code",
+      "to": "local-testing"
+    },
+    {
+      "from": "local-testing",
+      "to": "fail"
+    },
+    {
+      "from": "fail",
+      "to": "debug-fix-code",
+      "label": "Yes"
+    },
+    {
+      "from": "debug-fix-code",
+      "to": "local-testing"
+    },
+    {
+      "from": "fail",
+      "to": "commit-push-code",
+      "label": "No"
+    },
+    {
+      "from": "commit-push-code",
+      "to": "github"
+    },
+    {
+      "from": "github",
+      "to": "open-pull-request"
+    },
+    {
+      "from": "open-pull-request",
+      "to": "pull-request-merged"
+    },
+    {
+      "from": "pull-request-merged",
+      "to": "pull-request-ci-trigger"
+    },
+    {
+      "from": "pull-request-ci-trigger",
+      "to": "checkout-source-code"
+    },
+    {
+      "from": "checkout-source-code",
+      "to": "ci-system"
+    },
+    {
+      "from": "ci-system",
+      "to": "install-dependencies"
+    },
+    {
+      "from": "install-dependencies",
+      "to": "build-the-application"
+    },
+    {
+      "from": "build-the-application",
+      "to": "security-scan-sast"
+    },
+    {
+      "from": "security-scan-sast",
+      "to": "run-unit-tests"
+    },
+    {
+      "from": "run-unit-tests",
+      "to": "run-integration-tests"
+    },
+    {
+      "from": "run-integration-tests",
+      "to": "code-coverage-check"
+    },
+    {
+      "from": "code-coverage-check",
+      "to": "store-artifact-in-registry"
+    },
+    {
+      "from": "store-artifact-in-registry",
+      "to": "task-failed"
+    },
+    {
+      "from": "task-failed",
+      "to": "pipeline-stops-ci",
+      "label": "Yes"
+    },
+    {
+      "from": "pipeline-stops-ci",
+      "to": "developer-fixes-ci"
+    },
+    {
+      "from": "developer-fixes-ci",
+      "to": "commit-push-code",
+      "note": "repaired: source edge had a broken/dangling source-cell reference, but its coordinates matched this node's position almost exactly"
+    },
+    {
+      "from": "task-failed",
+      "to": "cd-system",
+      "label": "No"
+    },
+    {
+      "from": "cd-system",
+      "to": "manual-approval-gate"
+    },
+    {
+      "from": "manual-approval-gate",
+      "to": "fetch-build-artifacts",
+      "label": "Approved"
+    },
+    {
+      "from": "manual-approval-gate",
+      "to": "pipeline-stops-cd",
+      "label": "Rejected"
+    },
+    {
+      "from": "fetch-build-artifacts",
+      "to": "inject-config-secrets"
+    },
+    {
+      "from": "inject-config-secrets",
+      "to": "package-container-image"
+    },
+    {
+      "from": "package-container-image",
+      "to": "push-image-docker-hub"
+    },
+    {
+      "from": "push-image-docker-hub",
+      "to": "pull-image-and-deploy"
+    },
+    {
+      "from": "pull-image-and-deploy",
+      "to": "staging-server"
+    },
+    {
+      "from": "staging-server",
+      "to": "run-smoke-tests"
+    },
+    {
+      "from": "run-smoke-tests",
+      "to": "run-health-check"
+    },
+    {
+      "from": "run-health-check",
+      "to": "all-checks-pass"
+    },
+    {
+      "from": "all-checks-pass",
+      "to": "deployment-strategy",
+      "label": "Yes"
+    },
+    {
+      "from": "all-checks-pass",
+      "to": "notify-developer-team",
+      "label": "No"
+    },
+    {
+      "from": "notify-developer-team",
+      "to": "developer-fixes-cd"
+    },
+    {
+      "from": "developer-fixes-cd",
+      "to": "cd-system",
+      "label": "Back to CD System"
+    },
+    {
+      "from": "deployment-strategy",
+      "to": "automated-manual-deployment-production"
+    },
+    {
+      "from": "automated-manual-deployment-production",
+      "to": "post-production-health-check"
+    },
+    {
+      "from": "post-production-health-check",
+      "to": "rollback",
+      "label": "Fail"
+    },
+    {
+      "from": "rollback",
+      "to": "notify-developer-team",
+      "note": "cross-phase loop back into CD's notify node"
+    },
+    {
+      "from": "post-production-health-check",
+      "to": "end-users",
+      "label": "Pass"
+    },
+    {
+      "from": "end-users",
+      "to": "notify-team-success"
+    },
+    {
+      "from": "end-users",
+      "to": "monitoring-observability"
+    }
+  ],
+  "floatingNotes": [
+    {
+      "attachedTo": "commit-push-code",
+      "text": "A push in Git is the operation of uploading local commits from your machine to a remote repository, updating it with your latest changes."
+    },
+    {
+      "attachedTo": "github",
+      "text": "Storing the Code in Github Repository"
+    },
+    {
+      "attachedTo": "open-pull-request",
+      "text": "A pull request (PR) on GitHub is a collaborative feature that allows you to propose changes to a project's codebase and ask others to review and approve them before they are merged into the main project"
+    },
+    {
+      "attachedTo": "pull-request-merged",
+      "text": "CI Pipeline Trigger: this merge is the event that starts the CI pipeline automatically. No one manually starts a build; the merge itself fires it."
+    },
+    {
+      "attachedTo": "ci-system",
+      "text": "A Machine / Server"
+    }
+  ],
+  "phases": [
+    {
+      "id": "local-development",
+      "label": "Local Development Phase",
+      "hasTitleBoxInSource": true
+    },
+    {
+      "id": "continuous-integration",
+      "label": "Continuous Integration Phase",
+      "hasTitleBoxInSource": true
+    },
+    {
+      "id": "continuous-delivery-deployment",
+      "label": "Continuous Deployment/Continuous Delivery Phase",
+      "hasTitleBoxInSource": true
+    },
+    {
+      "id": "production",
+      "label": "Production Phase",
+      "hasTitleBoxInSource": false
+    }
+  ],
+  "decisionPoints": [
+    "fail",
+    "task-failed",
+    "manual-approval-gate",
+    "all-checks-pass",
+    "post-production-health-check"
+  ],
+  "excludedFromSource": [
+    {
+      "description": "Stray self-loop edge 'Docker Hub -> Docker Hub'",
+      "reason": "leftover editing artifact, not a real connection"
+    },
+    {
+      "description": "5 dangling point-to-point lines with no source/target cell (approx x=-320, 890, 1612, 1876.8, 2280)",
+      "reason": "decorative vertical divider lines between phases, not flow edges"
+    }
+  ]
+}

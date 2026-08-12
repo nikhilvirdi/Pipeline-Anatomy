@@ -1,4 +1,3 @@
-```gitignore
 # Dependencies
 node_modules/
 
@@ -42,26 +41,3 @@ coverage/
 
 # Antigravity / agent-specific files
 .antigravity/
-
-# Internal development files
-scratch/
-scripts/
-diagram/
-node-cards/
-
-# Internal project data / configuration
-phase-cards.json
-node-cards.json
-
-# Internal documentation
-ACCEPTANCE_CRITERIA.md
-CLAUDE.md
-DIAGRAM_FIXES.md
-EDGE_RULES.md
-FOLDER_STRUCTURE.md
-NODE_TYPES.md
-PROJECT_BRIEF.md
-THEME_TOKENS.md
-UI_SPEC.md
-WORKFLOW.md
-```

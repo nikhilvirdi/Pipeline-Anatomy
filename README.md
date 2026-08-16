@@ -10,9 +10,9 @@ Built with React (JavaScript) and Vite, using React Flow for the diagram itself 
 
 CI/CD is the first diagram here, not the last. More structural-reference pipelines are on the roadmap, covering:
 
-- Networking
-- Compilers
-- DevOps / Infrastructure
-- Databases
-- AI Engineering
-- System Design
+- Computer Networking Concepts
+- Compiler Implementation
+- DevOps / Infrastructure Pipelines
+- Database Internals
+- AI Engineering Pipelines
+- System Design Patterns

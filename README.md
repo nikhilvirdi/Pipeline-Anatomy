@@ -4,17 +4,15 @@ An interactive, single-page visualization of technical pipelines and system diag
 
 ### Stack
 
-- React (JavaScript) + Vite
-- React Flow
-- Tailwind CSS
+Built with React (JavaScript) and Vite, using React Flow for the diagram itself and Tailwind CSS for styling.
 
 ### Planned pipelines
 
-CI/CD is the first diagram in this app; more structural-reference pipelines are planned across:
+CI/CD is the first diagram here, not the last. More structural-reference pipelines are on the roadmap, covering:
 
 - Networking
-- Compiler
+- Compilers
 - DevOps / Infrastructure
-- Database
+- Databases
 - AI Engineering
 - System Design

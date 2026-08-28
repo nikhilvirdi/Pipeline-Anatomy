@@ -1,7 +1,72 @@
 import React from 'react';
-import { getBezierPath, EdgeLabelRenderer, BaseEdge } from '@xyflow/react';
+import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from '@xyflow/react';
 
 import { useEdgeHighlight } from '../../context/DiagramInteractionContext';
+
+function getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition) {
+  // Pure straight lines when aligned on axis
+  if (sourcePosition === 'bottom' && targetPosition === 'top' && Math.abs(sourceX - targetX) < 1) {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY}`, labelX: sourceX, labelY: (sourceY + targetY) / 2 };
+  }
+  if (sourcePosition === 'top' && targetPosition === 'bottom' && Math.abs(sourceX - targetX) < 1) {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY}`, labelX: sourceX, labelY: (sourceY + targetY) / 2 };
+  }
+  if (sourcePosition === 'right' && targetPosition === 'left' && Math.abs(sourceY - targetY) < 1) {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
+  }
+  if (sourcePosition === 'left' && targetPosition === 'right' && Math.abs(sourceY - targetY) < 1) {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
+  }
+
+  // Pure single 90-degree corners
+  if (sourcePosition === 'right' && targetPosition === 'top') {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: sourceY - 12 };
+  }
+  if (sourcePosition === 'top' && targetPosition === 'left') {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY} H ${targetX}`, labelX: sourceX + 12, labelY: (sourceY + targetY) / 2 };
+  }
+  if (sourcePosition === 'bottom' && targetPosition === 'left') {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: targetY };
+  }
+  if (sourcePosition === 'bottom' && targetPosition === 'right') {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: targetY };
+  }
+  if (sourcePosition === 'top' && targetPosition === 'right') {
+    return { path: `M ${sourceX} ${sourceY} V ${targetY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: targetY };
+  }
+  if (sourcePosition === 'left' && targetPosition === 'bottom') {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
+  }
+  if (sourcePosition === 'right' && targetPosition === 'bottom') {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
+  }
+  if (sourcePosition === 'left' && targetPosition === 'top') {
+    return { path: `M ${sourceX} ${sourceY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
+  }
+
+  // Clean mid-point step for same-axis offsets
+  if ((sourcePosition === 'right' && targetPosition === 'left') || (sourcePosition === 'left' && targetPosition === 'right')) {
+    const midX = (sourceX + targetX) / 2;
+    return { path: `M ${sourceX} ${sourceY} H ${midX} V ${targetY} H ${targetX}`, labelX: midX, labelY: (sourceY + targetY) / 2 };
+  }
+  if ((sourcePosition === 'bottom' && targetPosition === 'top') || (sourcePosition === 'top' && targetPosition === 'bottom')) {
+    const midY = (sourceY + targetY) / 2;
+    return { path: `M ${sourceX} ${sourceY} V ${midY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: midY };
+  }
+
+  // Fallback to React Flow smoothstep with offset: 0, borderRadius: 0
+  const [stepPath, sX, sY] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+    borderRadius: 0,
+    offset: 0,
+  });
+  return { path: stepPath, labelX: sX, labelY: sY };
+}
 
 export default function CurvedEdge({
   id,
@@ -18,65 +83,64 @@ export default function CurvedEdge({
   const isBidirectional = data?.isBidirectional;
   const highlight = useEdgeHighlight(id);
 
-  const isHorizontalLongLoopback =
-    data?.orientation !== 'vertical' && isLoopback && sourceX - targetX > 300;
-  const isVerticalLongLoopback =
-    data?.orientation === 'vertical' && isLoopback && sourceY - targetY > 150;
-
   let edgePath = '';
   let labelX = (sourceX + targetX) / 2;
   let labelY = (sourceY + targetY) / 2;
 
-  if (isHorizontalLongLoopback) {
-    let marginY = 820;
-    if (id.includes('rollback')) {
-      marginY = 760;
-    } else if (id.includes('developer-fixes-cd')) {
-      marginY = 810;
-    } else if (id.includes('developer-fixes-ci')) {
-      marginY = 860;
-    }
+  if (data?.orientation !== 'vertical' && isLoopback) {
+    if (id.includes('developer-fixes-ci') && id.includes('commit-push-code')) {
+      const marginY = -140;
+      edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
+      labelX = (sourceX + targetX) / 2;
+      labelY = marginY - 12;
+    } else if (id.includes('developer-fixes-cd') && id.includes('cd-system')) {
+      const marginY = 30;
+      edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
+      labelX = (sourceX + targetX) / 2;
+      labelY = marginY - 12;
+    } else if (id.includes('rollback') && id.includes('notify-developer-team')) {
+      const marginY = -270;
+      edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
+      labelX = (sourceX + targetX) / 2;
+      labelY = marginY - 12;
+    } else {
 
-    const r = 20;
-    edgePath =
-      `M ${sourceX} ${sourceY} ` +
-      `V ${marginY - r} ` +
-      `Q ${sourceX} ${marginY} ${sourceX - r} ${marginY} ` +
-      `H ${targetX + r} ` +
-      `Q ${targetX} ${marginY} ${targetX} ${marginY - r} ` +
-      `V ${targetY}`;
-    labelX = (sourceX + targetX) / 2;
-    labelY = marginY;
-  } else if (isVerticalLongLoopback) {
-    const marginX = -440;
-    const r = 20;
-    edgePath =
-      `M ${sourceX} ${sourceY} ` +
-      `H ${marginX + r} ` +
-      `Q ${marginX} ${sourceY} ${marginX} ${sourceY - r} ` +
-      `V ${targetY + r} ` +
-      `Q ${marginX} ${targetY} ${marginX + r} ${targetY} ` +
-      `H ${targetX}`;
-    labelX = marginX;
-    labelY = (sourceY + targetY) / 2;
+      const result = getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition);
+      edgePath = result.path;
+      labelX = result.labelX;
+      labelY = result.labelY;
+    }
   } else {
-    const [bezierPath, bX, bY] = getBezierPath({
-      sourceX,
-      sourceY,
-      sourcePosition,
-      targetX,
-      targetY,
-      targetPosition,
-    });
-    edgePath = bezierPath;
-    labelX = bX;
-    labelY = bY;
+    const result = getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition);
+    edgePath = result.path;
+    labelX = result.labelX;
+    labelY = result.labelY;
   }
 
-  // Base style
-  const style = isLoopback
-    ? { stroke: 'var(--accent-error)', strokeWidth: 1.5, strokeDasharray: '6 4' }
-    : { stroke: 'var(--connector-line)', strokeWidth: 1.5 };
+
+
+  const upperLabel = (label || '').toUpperCase().trim();
+  const isPassBranch = ['YES', 'PASS', 'APPROVED'].includes(upperLabel);
+  const isFailBranch = ['NO', 'FAIL', 'REJECTED'].includes(upperLabel);
+
+  // Base style & markers per color-coding rules:
+  // - Loopback: yellow dashed
+  // - No / Fail / Rejected: red dashed
+  // - Yes / Pass / Approved: green dashed
+  // - Default flow: neutral solid
+  let style = { stroke: 'var(--connector-line)', strokeWidth: 1.5 };
+  let markerId = 'pa-arrow-default';
+
+  if (isLoopback) {
+    style = { stroke: 'var(--accent-warning)', strokeWidth: 1.5, strokeDasharray: '6 4' };
+    markerId = 'pa-arrow-loopback';
+  } else if (isFailBranch) {
+    style = { stroke: 'var(--accent-error)', strokeWidth: 1.5, strokeDasharray: '6 4' };
+    markerId = 'pa-arrow-error';
+  } else if (isPassBranch) {
+    style = { stroke: 'var(--accent-success)', strokeWidth: 1.5, strokeDasharray: '6 4' };
+    markerId = 'pa-arrow-success';
+  }
 
   style.transition = 'opacity 300ms ease-out, stroke 200ms ease-out';
 
@@ -87,10 +151,16 @@ export default function CurvedEdge({
       break;
     case 'downstream':
     case 'direct':
-      if (!isLoopback) style.stroke = 'var(--connector-active)';
+      if (!isLoopback && !isFailBranch && !isPassBranch) {
+        style.stroke = 'var(--connector-active)';
+        markerId = 'pa-arrow-accent';
+      }
       break;
     case 'upstream':
-      if (!isLoopback) style.stroke = 'var(--connector-active)';
+      if (!isLoopback && !isFailBranch && !isPassBranch) {
+        style.stroke = 'var(--connector-active)';
+        markerId = 'pa-arrow-accent';
+      }
       style.opacity = 0.55;
       break;
     default:
@@ -99,25 +169,10 @@ export default function CurvedEdge({
 
   // Determine Label Text Color
   let labelColorClass = 'text-primary';
-  if (label) {
-    const upperLabel = label.toUpperCase();
-    if (['YES', 'PASS', 'APPROVED'].includes(upperLabel)) {
-      labelColorClass = 'text-accent-success';
-    } else if (['NO', 'REJECTED'].includes(upperLabel)) {
-      labelColorClass = 'text-accent-error';
-    }
-  }
-
-  // Select arrowhead marker ID matching the edge state
-  let markerId = 'pa-arrow-default';
-  if (isLoopback) {
-    markerId = 'pa-arrow-loopback';
-  } else if (
-    highlight === 'downstream' ||
-    highlight === 'direct' ||
-    highlight === 'upstream'
-  ) {
-    markerId = 'pa-arrow-accent';
+  if (isPassBranch) {
+    labelColorClass = 'text-accent-success font-semibold';
+  } else if (isFailBranch) {
+    labelColorClass = 'text-accent-error font-semibold';
   }
 
   const markerEndUrl = `url(#${markerId})`;
@@ -125,6 +180,7 @@ export default function CurvedEdge({
   const isHorizontal = sourcePosition === 'left' || sourcePosition === 'right';
   const labelOffsetX = isHorizontal ? 0 : 12;
   const labelOffsetY = isHorizontal ? -12 : 0;
+
 
   return (
     <>

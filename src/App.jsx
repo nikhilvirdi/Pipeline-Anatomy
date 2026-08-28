@@ -47,6 +47,10 @@ const edgeTypes = {
   curved: CurvedEdge,
 };
 
+// Fixed default viewport matching Phase 01 framing exactly
+const DEFAULT_VIEWPORT = { x: 80, y: 130, zoom: 0.78 };
+const VERTICAL_DEFAULT_VIEWPORT = { x: 60, y: 80, zoom: 0.75 };
+
 const FIT_VIEW_OPTIONS = { padding: 0.1, minZoom: 0.5 };
 // Zoom transition: 300–400ms ease-out per THEME_TOKENS.md
 const TRANSITION_MS = 350;
@@ -56,8 +60,9 @@ const FOCUS_VIEW_OPTIONS = { padding: 0.2, minZoom: 0.4, maxZoom: 1.5 };
 
 function DiagramCanvas() {
   const { theme } = useTheme();
-  const { fitView, getNodes } = useReactFlow();
+  const { fitView, setViewport, getNodes } = useReactFlow();
   const canvasRef = useRef(null);
+
 
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const isTouch = useMediaQuery(TOUCH_QUERY);
@@ -199,12 +204,13 @@ function DiagramCanvas() {
     setMinimapVisible(!isSmallScreen);
 
     // One tick, so the new positions are in the store before it measures them.
+    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
     const timer = window.setTimeout(
-      () => fitView({ ...FIT_VIEW_OPTIONS, duration: TRANSITION_MS }),
+      () => setViewport(target, { duration: TRANSITION_MS }),
       60
     );
     return () => window.clearTimeout(timer);
-  }, [fitView, isSmallScreen, orientation]);
+  }, [isSmallScreen, orientation, setViewport]);
 
   const interaction = useMemo(
     () => ({
@@ -400,8 +406,9 @@ function DiagramCanvas() {
   const handleResetView = useCallback(() => {
     clearFocus();
     setHoveredNodeId(null);
-    fitView({ ...FIT_VIEW_OPTIONS, duration: TRANSITION_MS });
-  }, [clearFocus, fitView]);
+    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
+    setViewport(target, { duration: TRANSITION_MS });
+  }, [clearFocus, orientation, setViewport]);
 
   const handleToggleMinimap = useCallback(() => {
     setMinimapVisible((visible) => !visible);
@@ -449,6 +456,7 @@ function DiagramCanvas() {
   );
 
   /* --------------------------------------------------------------- render */
+
 
   const isLight = theme === 'light';
 
@@ -526,6 +534,7 @@ function DiagramCanvas() {
       </div>
 
       <div
+
         ref={canvasRef}
         tabIndex={0}
         role="application"
@@ -542,11 +551,7 @@ function DiagramCanvas() {
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            fitView
-            fitViewOptions={FIT_VIEW_OPTIONS}
-            // The diagram spans ~6350 units, so fitting it needs roughly 0.21
-            // zoom — React Flow's default minZoom of 0.5 clamps fitView and
-            // leaves both ends of the pipeline off-screen.
+            defaultViewport={orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT}
             minZoom={0.1}
             maxZoom={2}
             nodesDraggable={true}

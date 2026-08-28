@@ -2,7 +2,9 @@ import React from 'react';
 import { useViewport } from '@xyflow/react';
 
 // X-coordinates for the 3 phase transition boundaries in clear gap space
-const DIVIDER_X_POSITIONS = [2470, 5080, 7550];
+const DIVIDER_X_POSITIONS = [2190, 4110, 5900];
+
+
 
 export default function PhaseDividers({ theme, orientation }) {
   const { x, y, zoom } = useViewport();

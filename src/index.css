@@ -29,6 +29,7 @@
   --accent-primary: #4a4a4a;
   --accent-success: #1a7f37;
   --accent-error: #cf222e;
+  --accent-warning: #9a6700;
   --accent-info: #4a4a4a;
   --connector-line: #d0d0d0;
   --connector-active: #4a4a4a;
@@ -53,10 +54,12 @@
   --accent-primary: #a0a0a0;
   --accent-success: #3fb950;
   --accent-error: #f85149;
+  --accent-warning: #d29922;
   --accent-info: #a0a0a0;
   --connector-line: #3a3a3a;
   --connector-active: #a0a0a0;
 }
+
 
 
 

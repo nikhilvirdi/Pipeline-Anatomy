@@ -7,7 +7,9 @@ import React from 'react';
 const MARKERS = [
   { id: 'pa-arrow-default', color: 'var(--connector-line)' },
   { id: 'pa-arrow-accent', color: 'var(--connector-active)' },
-  { id: 'pa-arrow-loopback', color: 'var(--accent-error)' },
+  { id: 'pa-arrow-loopback', color: 'var(--accent-warning)' },
+  { id: 'pa-arrow-error', color: 'var(--accent-error)' },
+  { id: 'pa-arrow-success', color: 'var(--accent-success)' },
 ];
 
 export default function EdgeMarkers() {
@@ -25,17 +27,18 @@ export default function EdgeMarkers() {
             key={id}
             id={id}
             viewBox="0 0 10 10"
-            refX="9"
+            refX="7"
             refY="5"
-            markerWidth="6"
-            markerHeight="6"
+            markerWidth="7"
+            markerHeight="7"
             markerUnits="strokeWidth"
             orient="auto-start-reverse"
           >
-            <path d="M 0 1 L 9 5 L 0 9 z" fill={color} />
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill={color} />
           </marker>
         ))}
       </defs>
     </svg>
   );
 }
+

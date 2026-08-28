@@ -6,9 +6,8 @@
       "phase": "local-development",
       "shape": "actor",
       "source": "authored-icon",
-      "note": "Phase 2 layout gap: JSON had no x/y for this node (source XML had it at x=-167.5,y=220, feeding directly into 'Writing the Code', but that position no longer fits now that 3 new nodes sit in between). Repositioned as the start of a horizontal chain leading into writing-the-code; not an XML-derived position.",
-      "x": 0,
-      "y": 100
+      "x": -17,
+      "y": 37
     },
     {
       "id": "ideation",
@@ -16,9 +15,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "authored",
-      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": 250,
-      "y": 20
+      "x": 243,
+      "y": 60
     },
     {
       "id": "architecture",
@@ -26,9 +24,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "authored",
-      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": 250,
-      "y": 100
+      "x": 520,
+      "y": 60
     },
     {
       "id": "tech-stack-locked-in",
@@ -36,9 +33,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "authored",
-      "note": "Phase 2 layout gap: synthetic node has no source XML geometry. Positioned as part of the developer -> ... -> writing-the-code horizontal chain.",
-      "x": 250,
-      "y": 180
+      "x": 796,
+      "y": 60
     },
     {
       "id": "writing-the-code",
@@ -46,8 +42,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 550,
-      "y": 100
+      "x": 1106,
+      "y": 45
     },
     {
       "id": "local-testing",
@@ -55,9 +51,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml-corrected",
-      "note": "source had typo 'Checls', corrected to 'Checks'",
-      "x": 850,
-      "y": 100
+      "x": 1081,
+      "y": 200
     },
     {
       "id": "fail",
@@ -65,8 +60,8 @@
       "phase": "local-development",
       "shape": "decision",
       "source": "xml",
-      "x": 1200,
-      "y": 85
+      "x": 1398,
+      "y": 380
     },
     {
       "id": "debug-fix-code",
@@ -74,8 +69,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1350,
-      "y": 270
+      "x": 847,
+      "y": 432
     },
     {
       "id": "commit-push-code",
@@ -83,8 +78,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1520,
-      "y": 20
+      "x": 1587,
+      "y": 182
     },
     {
       "id": "github",
@@ -92,8 +87,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1520,
-      "y": 140
+      "x": 1948,
+      "y": 182
     },
     {
       "id": "open-pull-request",
@@ -101,8 +96,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1850,
-      "y": 140
+      "x": 1948,
+      "y": 421
     },
     {
       "id": "pull-request-merged",
@@ -110,8 +105,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 2150,
-      "y": 140
+      "x": 2245,
+      "y": 421
     },
     {
       "id": "pull-request-ci-trigger",
@@ -119,9 +114,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from pull-request-merged",
-      "x": 2450,
-      "y": 60
+      "x": 2528,
+      "y": 291
     },
     {
       "id": "checkout-source-code",
@@ -129,8 +123,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 2450,
-      "y": 200
+      "x": 2768,
+      "y": 413
     },
     {
       "id": "ci-system",
@@ -138,8 +132,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 2750,
-      "y": 120
+      "x": 3063,
+      "y": 388
     },
     {
       "id": "install-dependencies",
@@ -147,8 +141,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3100,
-      "y": 20
+      "x": 3108,
+      "y": 582
     },
     {
       "id": "build-the-application",
@@ -156,8 +150,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3100,
-      "y": 120
+      "x": 3108,
+      "y": 756
     },
     {
       "id": "security-scan-sast",
@@ -165,8 +159,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3100,
-      "y": 220
+      "x": 3383,
+      "y": 645
     },
     {
       "id": "run-unit-tests",
@@ -174,9 +168,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Execute Tests'",
-      "x": 3450,
-      "y": 20
+      "x": 3629,
+      "y": 754
     },
     {
       "id": "run-integration-tests",
@@ -184,9 +177,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Execute Tests'",
-      "x": 3450,
-      "y": 120
+      "x": 3887,
+      "y": 638
     },
     {
       "id": "code-coverage-check",
@@ -194,8 +186,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3450,
-      "y": 220
+      "x": 3887,
+      "y": 403
     },
     {
       "id": "store-artifact-in-registry",
@@ -203,8 +195,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3800,
-      "y": 120
+      "x": 3887,
+      "y": 227
     },
     {
       "id": "task-failed",
@@ -212,8 +204,8 @@
       "phase": "continuous-integration",
       "shape": "decision",
       "source": "xml",
-      "x": 4150,
-      "y": 105
+      "x": 3902,
+      "y": -47
     },
     {
       "id": "pipeline-stops-ci",
@@ -221,8 +213,8 @@
       "phase": "continuous-integration",
       "shape": "circle",
       "source": "xml",
-      "x": 4450,
-      "y": 270
+      "x": 3610,
+      "y": 150
     },
     {
       "id": "developer-fixes-ci",
@@ -230,8 +222,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 4730,
-      "y": 420
+      "x": 3270,
+      "y": -51
     },
     {
       "id": "cd-system",
@@ -239,8 +231,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 4450,
-      "y": 20
+      "x": 4393,
+      "y": 195
     },
     {
       "id": "manual-approval-gate",
@@ -248,8 +240,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "decision",
       "source": "xml",
-      "x": 4800,
-      "y": 105
+      "x": 4454,
+      "y": 429
     },
     {
       "id": "pipeline-stops-cd",
@@ -257,9 +249,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "circle",
       "source": "xml-corrected",
-      "note": "shape corrected from 'rect' to 'circle' to match pipeline-stops-ci — DIAGRAM_FIXES.md requires both Pipeline Stops nodes to use the same shape",
-      "x": 5150,
-      "y": 270
+      "x": 4164,
+      "y": 485
     },
     {
       "id": "fetch-build-artifacts",
@@ -267,8 +258,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 5150,
-      "y": 20
+      "x": 4763,
+      "y": 482
     },
     {
       "id": "inject-config-secrets",
@@ -276,8 +267,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 5500,
-      "y": 120
+      "x": 4769,
+      "y": 292
     },
     {
       "id": "package-container-image",
@@ -285,9 +276,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Docker Hub'",
-      "x": 5850,
-      "y": 20
+      "x": 5081,
+      "y": 278
     },
     {
       "id": "push-image-docker-hub",
@@ -295,9 +285,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Docker Hub'",
-      "x": 5850,
-      "y": 120
+      "x": 5450,
+      "y": 444
     },
     {
       "id": "pull-image-and-deploy",
@@ -305,8 +294,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 5850,
-      "y": 220
+      "x": 5636,
+      "y": 291
     },
     {
       "id": "staging-server",
@@ -314,8 +303,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 6200,
-      "y": 60
+      "x": 5962,
+      "y": 359
     },
     {
       "id": "run-smoke-tests",
@@ -323,9 +312,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Run Smoke Tests / Health Check'",
-      "x": 6200,
-      "y": 180
+      "x": 6331,
+      "y": 359
     },
     {
       "id": "run-health-check",
@@ -333,9 +321,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "note": "split from source node 'Run Smoke Tests / Health Check'",
-      "x": 6550,
-      "y": 120
+      "x": 6725,
+      "y": 250
     },
     {
       "id": "all-checks-pass",
@@ -343,8 +330,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "decision",
       "source": "xml",
-      "x": 6900,
-      "y": 105
+      "x": 6964,
+      "y": -124
     },
     {
       "id": "notify-developer-team",
@@ -352,8 +339,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 7250,
-      "y": 270
+      "x": 6605,
+      "y": -72
     },
     {
       "id": "developer-fixes-cd",
@@ -361,8 +348,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 7530,
-      "y": 420
+      "x": 6151,
+      "y": 112
     },
     {
       "id": "deployment-strategy",
@@ -370,8 +357,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 7250,
-      "y": 20
+      "x": 7187,
+      "y": 39
     },
     {
       "id": "automated-manual-deployment-production",
@@ -379,8 +366,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 7600,
-      "y": 120
+      "x": 7611,
+      "y": 39
     },
     {
       "id": "post-production-health-check",
@@ -388,9 +375,8 @@
       "phase": "production",
       "shape": "decision",
       "source": "xml-treated-as-decision",
-      "note": "drawn as a rectangle in source, treated as the 5th decision point per locked decision",
-      "x": 7950,
-      "y": 105
+      "x": 7873,
+      "y": -248
     },
     {
       "id": "rollback",
@@ -398,8 +384,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 8300,
-      "y": 400
+      "x": 7302,
+      "y": -196
     },
     {
       "id": "end-users",
@@ -407,8 +393,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 8300,
-      "y": 100
+      "x": 8259,
+      "y": -57
     },
     {
       "id": "notify-team-success",
@@ -416,8 +402,8 @@
       "phase": "production",
       "shape": "circle",
       "source": "xml",
-      "x": 8700,
-      "y": 20
+      "x": 8652,
+      "y": -53
     },
     {
       "id": "monitoring-observability",
@@ -425,10 +411,11 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 8300,
-      "y": 250
+      "x": 8240,
+      "y": 241
     }
-  ],
+  ]
+,
   "edges": [
     {
       "from": "developer",

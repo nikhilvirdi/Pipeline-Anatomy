@@ -7,45 +7,76 @@ export default function DecisionNode({ id, data }) {
   const { label, icons } = data;
   const { dimClass, accentClass } = useNodeHighlight(id);
 
-  const handleBg = '!bg-text-muted border-none';
+  const getHandleClass = (handleId) => {
+    const isUsed = data?.usedHandles?.[handleId];
+    return isUsed
+      ? '!bg-text-muted border-none w-2.5 h-2.5 z-20 cursor-default'
+      : '!opacity-0 !w-0 !h-0 !border-none !p-0 pointer-events-none';
+  };
 
   return (
     <div className={`relative w-40 h-40 flex items-center justify-center ${dimClass}`}>
-      {/* Target Handle on Left point */}
+      {/* Target Handles */}
       <Handle
         type="target"
         position={Position.Left}
         id="left"
         isConnectable={false}
-        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
+        className={getHandleClass('left')}
+      />
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="target-top"
+        isConnectable={false}
+        className={getHandleClass('target-top')}
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="target-bottom"
+        isConnectable={false}
+        className={getHandleClass('target-bottom')}
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="target-right"
+        isConnectable={false}
+        className={getHandleClass('target-right')}
       />
 
-      {/* Source Handle on Top point (No / Pass / Approved) */}
+      {/* Source Handles */}
       <Handle
         type="source"
         position={Position.Top}
         id="top"
         isConnectable={false}
-        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
+        className={getHandleClass('top')}
       />
-
-      {/* Source Handle on Bottom point (Yes / Fail / Rejected) */}
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
         isConnectable={false}
-        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
+        className={getHandleClass('bottom')}
       />
-
-      {/* Source Handle on Right point */}
       <Handle
         type="source"
         position={Position.Right}
         id="right"
         isConnectable={false}
-        className={`${handleBg} w-3 h-3 z-20 cursor-default`}
+        className={getHandleClass('right')}
       />
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="source-left"
+        isConnectable={false}
+        className={getHandleClass('source-left')}
+      />
+
+
 
       {/* Rotated Diamond Background */}
       <div

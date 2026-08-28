@@ -81,9 +81,9 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
   const headerNodes = diagramData.phases.map((phase, idx) => {
     const headerDefs = {
       'local-development': { x: -20, y: -70, step: 'PHASE 01' },
-      'continuous-integration': { x: 2500, y: -70, step: 'PHASE 02' },
-      'continuous-delivery-deployment': { x: 5120, y: -70, step: 'PHASE 03' },
-      'production': { x: 7580, y: -70, step: 'PHASE 04' },
+      'continuous-integration': { x: 2200, y: -70, step: 'PHASE 02' },
+      'continuous-delivery-deployment': { x: 4160, y: -70, step: 'PHASE 03' },
+      'production': { x: 5740, y: -70, step: 'PHASE 04' },
     };
     const def = headerDefs[phase.id] || { x: 0, y: idx * 400, step: `PHASE 0${idx + 1}` };
     const phaseCard = phaseCards[phase.id];
@@ -107,14 +107,22 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     };
   });
 
+  const usedHandlesByNode = {};
+  const recordHandle = (nodeId, handleId) => {
+    if (!nodeId || !handleId) return;
+    if (!usedHandlesByNode[nodeId]) {
+      usedHandlesByNode[nodeId] = {};
+    }
+    usedHandlesByNode[nodeId][handleId] = true;
+  };
+
   const edges = diagramData.edges.map((edge) => {
     const isLoopback =
       (edge.from === 'developer-fixes-ci' && edge.to === 'commit-push-code') ||
       (edge.from === 'rollback' && edge.to === 'notify-developer-team') ||
       (edge.from === 'developer-fixes-cd' && edge.to === 'cd-system') ||
-      (edge.from === 'notify-developer-team' && edge.to === 'developer-fixes-cd') ||
-      (edge.from === 'pipeline-stops-ci' && edge.to === 'developer-fixes-ci') ||
-      (edge.from === 'debug-fix-code' && edge.to === 'local-testing');
+      (edge.from === 'debug-fix-code' && edge.to === 'local-testing') ||
+      (edge.from === 'pipeline-stops-ci' && edge.to === 'developer-fixes-ci');
 
     const isBidirectional =
       (edge.from === 'monitoring-observability' && edge.to === 'end-users') ||
@@ -123,50 +131,144 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     let sourceHandle = undefined;
     let targetHandle = undefined;
 
-    if (DECISION_NODE_IDS.has(edge.from)) {
-      if (edge.from === 'post-production-health-check') {
-        if (edge.to === 'end-users') {
-          sourceHandle = 'top';
-        } else if (edge.to === 'rollback') {
-          sourceHandle = 'bottom';
-        }
-      } else if (
-        (edge.from === 'fail' && edge.label === 'Yes') ||
-        (edge.from === 'task-failed' && edge.label === 'Yes') ||
-        (edge.from === 'manual-approval-gate' && edge.label === 'Rejected') ||
-        (edge.from === 'all-checks-pass' && edge.label === 'No')
-      ) {
-        sourceHandle = 'bottom';
-      } else if (
-        (edge.from === 'fail' && edge.label === 'No') ||
-        (edge.from === 'task-failed' && edge.label === 'No') ||
-        (edge.from === 'manual-approval-gate' && edge.label === 'Approved') ||
-        (edge.from === 'all-checks-pass' && edge.label === 'Yes')
-      ) {
-        sourceHandle = 'top';
+    if (!isVertical) {
+      // Phase 01: Local Development
+      if (edge.from === 'developer' && edge.to === 'ideation') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'ideation' && edge.to === 'architecture') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'architecture' && edge.to === 'tech-stack-locked-in') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'tech-stack-locked-in' && edge.to === 'writing-the-code') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'writing-the-code' && edge.to === 'local-testing') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'top';
+      } else if (edge.from === 'local-testing' && edge.to === 'fail') {
+        sourceHandle = 'right';
+        targetHandle = 'target-top';
+      } else if (edge.from === 'fail' && edge.to === 'debug-fix-code') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'debug-fix-code' && edge.to === 'local-testing') {
+        sourceHandle = 'source-top';
+        targetHandle = 'left';
+      } else if (edge.from === 'fail' && edge.to === 'commit-push-code') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'commit-push-code' && edge.to === 'github') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'github' && edge.to === 'open-pull-request') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'top';
+      } else if (edge.from === 'developer-fixes-ci' && edge.to === 'commit-push-code') {
+        sourceHandle = 'source-top';
+        targetHandle = 'top';
+      }
+
+
+      // Phase 02: Continuous Integration
+      else if (edge.from === 'ci-system' && edge.to === 'install-dependencies') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'top';
+      } else if (edge.from === 'install-dependencies' && edge.to === 'build-the-application') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'top';
+      } else if (edge.from === 'run-unit-tests' && edge.to === 'run-integration-tests') {
+        sourceHandle = 'right';
+        targetHandle = 'bottom';
+      } else if (edge.from === 'run-integration-tests' && edge.to === 'code-coverage-check') {
+        sourceHandle = 'source-top';
+        targetHandle = 'bottom';
+      } else if (edge.from === 'code-coverage-check' && edge.to === 'store-artifact-in-registry') {
+        sourceHandle = 'source-top';
+        targetHandle = 'bottom';
+      } else if (edge.from === 'store-artifact-in-registry' && edge.to === 'task-failed') {
+        sourceHandle = 'source-top';
+        targetHandle = 'target-bottom';
+      } else if (edge.from === 'task-failed' && edge.to === 'pipeline-stops-ci') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'pipeline-stops-ci' && edge.to === 'developer-fixes-ci') {
+        sourceHandle = 'source-left';
+        targetHandle = 'bottom';
+      } else if (edge.from === 'task-failed' && edge.to === 'cd-system') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      }
+
+      // Phase 03: Continuous Delivery / Deployment
+      else if (edge.from === 'cd-system' && edge.to === 'manual-approval-gate') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'target-top';
+      } else if (edge.from === 'manual-approval-gate' && edge.to === 'pipeline-stops-cd') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'manual-approval-gate' && edge.to === 'fetch-build-artifacts') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'push-image-docker-hub' && edge.to === 'pull-image-and-deploy') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'left';
+      } else if (edge.from === 'developer-fixes-cd' && edge.to === 'cd-system') {
+        sourceHandle = 'source-top';
+        targetHandle = 'top';
+      }
+
+      // Phase 04: Production
+      else if (edge.from === 'run-health-check' && edge.to === 'all-checks-pass') {
+        sourceHandle = 'right';
+        targetHandle = 'target-bottom';
+      } else if (edge.from === 'all-checks-pass' && edge.to === 'notify-developer-team') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'notify-developer-team' && edge.to === 'developer-fixes-cd') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'all-checks-pass' && edge.to === 'deployment-strategy') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'automated-manual-deployment-production' && edge.to === 'post-production-health-check') {
+        sourceHandle = 'right';
+        targetHandle = 'target-bottom';
+      } else if (edge.from === 'post-production-health-check' && edge.to === 'rollback') {
+        sourceHandle = 'source-left';
+        targetHandle = 'target-right';
+      } else if (edge.from === 'rollback' && edge.to === 'notify-developer-team') {
+        sourceHandle = 'source-left';
+        targetHandle = 'top';
+      } else if (edge.from === 'post-production-health-check' && edge.to === 'end-users') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      }
+
+      else if (edge.from === 'end-users' && edge.to === 'monitoring-observability') {
+        sourceHandle = 'source-bottom';
+        targetHandle = 'top';
+      } else if (edge.from === 'monitoring-observability' && edge.to === 'end-users') {
+        sourceHandle = 'source-top';
+        targetHandle = 'bottom';
       }
     }
 
-    if (edge.from === 'end-users' && edge.to === 'monitoring-observability') {
-      sourceHandle = 'bottom';
-      targetHandle = 'top';
-    }
+    const sHandle = sourceHandle || (isVertical ? 'source-bottom' : 'right');
+    const tHandle = targetHandle || (isVertical ? 'top' : 'left');
 
-    if (
-      (edge.to === 'local-testing' && edge.from === 'debug-fix-code') ||
-      (edge.to === 'commit-push-code' && edge.from === 'developer-fixes-ci') ||
-      (edge.to === 'cd-system' && edge.from === 'developer-fixes-cd')
-    ) {
-      targetHandle = 'bottom';
-    }
+    recordHandle(edge.from, sHandle);
+    recordHandle(edge.to, tHandle);
 
     return {
       id: edgeId(edge.from, edge.to),
       type: 'curved',
       source: edge.from,
       target: edge.to,
-      sourceHandle,
-      targetHandle,
+      sourceHandle: sHandle,
+      targetHandle: tHandle,
       label: edge.label || undefined,
       data: {
         note: edge.note,
@@ -178,5 +280,10 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     };
   });
 
+  nodes.forEach((n) => {
+    n.data.usedHandles = usedHandlesByNode[n.id] || {};
+  });
+
   return { nodes: [...headerNodes, ...nodes], edges, phases: diagramData.phases };
 }
+

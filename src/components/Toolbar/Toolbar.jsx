@@ -7,7 +7,6 @@ import SearchPanel from './SearchPanel';
 import ToolbarButton from './ToolbarButton';
 import {
   DockIcon,
-  MinimapIcon,
   MoonIcon,
   PhaseFilterIcon,
   ResetViewIcon,
@@ -23,8 +22,6 @@ import {
  */
 export default function Toolbar({
   onResetView,
-  minimapVisible = false,
-  onToggleMinimap,
   phases = [],
   phaseCounts = {},
   hiddenPhases,
@@ -34,6 +31,7 @@ export default function Toolbar({
   onJumpToNode,
   isSmallScreen = false,
 }) {
+
   const { theme, toggleTheme } = useTheme();
   const { ref, edge, position, dragging, vertical, handlers, cycleEdge } =
     useToolbarDock('left', isSmallScreen ? 'top' : null);
@@ -139,16 +137,8 @@ export default function Toolbar({
         onClick={() => togglePanel('phases')}
       />
 
-      <ToolbarButton
-        label="Toggle minimap"
-        icon={<MinimapIcon />}
-        theme={theme}
-        active={minimapVisible}
-        pressed={minimapVisible}
-        onClick={onToggleMinimap}
-      />
-
       <div className={dividerClass} />
+
 
       <ToolbarButton
         label={`Move toolbar (docked ${edge})`}

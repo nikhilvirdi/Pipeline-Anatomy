@@ -3,11 +3,11 @@ import {
   ReactFlow,
   ReactFlowProvider,
   Controls,
-  MiniMap,
   useEdgesState,
   useNodesState,
   useReactFlow,
 } from '@xyflow/react';
+
 import '@xyflow/react/dist/style.css';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -47,9 +47,11 @@ const edgeTypes = {
   curved: CurvedEdge,
 };
 
-// Fixed default viewport matching Phase 01 framing exactly
-const DEFAULT_VIEWPORT = { x: 80, y: 130, zoom: 0.78 };
+// Fixed default viewport matching Phase 01 framing with breathing room
+const DEFAULT_VIEWPORT = { x: 150, y: 200, zoom: 0.78 };
 const VERTICAL_DEFAULT_VIEWPORT = { x: 60, y: 80, zoom: 0.75 };
+
+
 
 const FIT_VIEW_OPTIONS = { padding: 0.1, minZoom: 0.5 };
 // Zoom transition: 300–400ms ease-out per THEME_TOKENS.md
@@ -81,10 +83,7 @@ function DiagramCanvas() {
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [keyboardNodeId, setKeyboardNodeId] = useState(null);
   const [hiddenPhases, setHiddenPhases] = useState(() => new Set());
-  // The minimap costs ~17% of a phone screen and sits exactly where the
-  // small-screen tooltip is anchored, so it starts hidden there. The toolbar
-  // toggle still brings it back.
-  const [minimapVisible, setMinimapVisible] = useState(!isSmallScreen);
+
 
   const hiddenNodeIds = useMemo(() => {
     const hidden = new Set();
@@ -201,7 +200,7 @@ function DiagramCanvas() {
     setKeyboardNodeId(null);
     setHoveredNodeId(null);
     setTooltip(null);
-    setMinimapVisible(!isSmallScreen);
+
 
     // One tick, so the new positions are in the store before it measures them.
     const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
@@ -410,10 +409,6 @@ function DiagramCanvas() {
     setViewport(target, { duration: TRANSITION_MS });
   }, [clearFocus, orientation, setViewport]);
 
-  const handleToggleMinimap = useCallback(() => {
-    setMinimapVisible((visible) => !visible);
-  }, []);
-
   const handleTogglePhase = useCallback((phaseId) => {
     setHiddenPhases((current) => {
       const next = new Set(current);
@@ -457,22 +452,7 @@ function DiagramCanvas() {
 
   /* --------------------------------------------------------------- render */
 
-
   const isLight = theme === 'light';
-
-  // Hardcoded hex values — var() doesn't resolve inside React Flow's SVG
-  // minimap renderer, so CSS custom properties must not be used here.
-  const minimapNodeColor = useCallback(
-    (node) => {
-      const state = interaction.nodeStates.get(node.id);
-      if (state === 'focused')
-        return isLight ? '#4a4a4a' : '#a0a0a0';           // connector-active
-      if (state === 'neighbor' || state === 'related')
-        return isLight ? '#4a4a4a' : '#a0a0a0';           // accent-primary
-      return isLight ? '#d0d0d0' : '#3a3a3a';             // chrome neutral gray
-    },
-    [interaction.nodeStates, isLight]
-  );
 
 
 
@@ -518,8 +498,6 @@ function DiagramCanvas() {
       {/* Floating Toolbar (Phase 6) */}
       <Toolbar
         onResetView={handleResetView}
-        minimapVisible={minimapVisible}
-        onToggleMinimap={handleToggleMinimap}
         phases={base.phases}
         phaseCounts={phaseCounts}
         hiddenPhases={hiddenPhases}
@@ -579,23 +557,10 @@ function DiagramCanvas() {
             <DepthOfField containerRef={canvasRef} />
             <EdgeMarkers />
             <Controls className={isLight ? 'rf-controls-light' : 'rf-controls-dark'} />
-
-            {minimapVisible && (
-              <MiniMap
-                pannable
-                zoomable
-                className={isLight ? 'rf-minimap-light' : 'rf-minimap-dark'}
-                bgColor="transparent"
-                nodeColor={minimapNodeColor}
-                nodeStrokeWidth={0}
-                maskColor={
-                  isLight ? 'rgba(208, 215, 222, 0.2)' : 'rgba(13, 17, 23, 0.4)'
-                }
-              />
-            )}
           </ReactFlow>
         </DiagramInteractionProvider>
       </div>
+
     </div>
   );
 }

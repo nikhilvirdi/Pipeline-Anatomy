@@ -293,24 +293,11 @@ html, body, #root {
 }
 
 /* ==========================================================================
-   MINIMAP — Uses --chrome-* variables.
-   Scoped to .rf-minimap-* classes set via className prop on <MiniMap />.
-   ========================================================================== */
-
-.rf-minimap-dark,
-.rf-minimap-light {
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--chrome-bg) !important;
-  border: 1px solid var(--chrome-border) !important;
-  box-shadow: 0 4px 12px rgba(1, 4, 9, 0.2);
-}
-
-/* ==========================================================================
    ZOOM CONTROLS — Uses --chrome-* variables.
    Scoped to .rf-controls-* classes set via className prop on <Controls />.
    No padding, width, or font-size rules — those must not grow.
    ========================================================================== */
+
 
 .rf-controls-dark,
 .rf-controls-light {

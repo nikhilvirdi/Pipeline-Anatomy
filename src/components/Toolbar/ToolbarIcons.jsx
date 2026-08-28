@@ -70,16 +70,8 @@ export function PhaseFilterIcon() {
   );
 }
 
-export function MinimapIcon() {
-  return (
-    <svg {...base}>
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <rect x="6" y="8" width="7.5" height="5.5" rx="1" />
-    </svg>
-  );
-}
-
 export function DockIcon() {
+
   return (
     <svg {...base}>
       <path d="M12 3v18M3 12h18" />

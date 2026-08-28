@@ -4,19 +4,20 @@ import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from '@xyflow/react';
 import { useEdgeHighlight } from '../../context/DiagramInteractionContext';
 
 function getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition) {
-  // Pure straight lines when aligned on axis
-  if (sourcePosition === 'bottom' && targetPosition === 'top' && Math.abs(sourceX - targetX) < 1) {
+  // Pure straight lines when aligned on axis (within 4px subpixel/text-wrapping variance)
+  if (sourcePosition === 'bottom' && targetPosition === 'top' && Math.abs(sourceX - targetX) < 4) {
     return { path: `M ${sourceX} ${sourceY} V ${targetY}`, labelX: sourceX, labelY: (sourceY + targetY) / 2 };
   }
-  if (sourcePosition === 'top' && targetPosition === 'bottom' && Math.abs(sourceX - targetX) < 1) {
+  if (sourcePosition === 'top' && targetPosition === 'bottom' && Math.abs(sourceX - targetX) < 4) {
     return { path: `M ${sourceX} ${sourceY} V ${targetY}`, labelX: sourceX, labelY: (sourceY + targetY) / 2 };
   }
-  if (sourcePosition === 'right' && targetPosition === 'left' && Math.abs(sourceY - targetY) < 1) {
+  if (sourcePosition === 'right' && targetPosition === 'left' && Math.abs(sourceY - targetY) < 4) {
     return { path: `M ${sourceX} ${sourceY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
   }
-  if (sourcePosition === 'left' && targetPosition === 'right' && Math.abs(sourceY - targetY) < 1) {
+  if (sourcePosition === 'left' && targetPosition === 'right' && Math.abs(sourceY - targetY) < 4) {
     return { path: `M ${sourceX} ${sourceY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
   }
+
 
   // Pure single 90-degree corners
   if (sourcePosition === 'right' && targetPosition === 'top') {

@@ -51,18 +51,20 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml-corrected",
-      "x": 1081,
+      "x": 1061,
       "y": 200
     },
+
     {
       "id": "fail",
-      "label": "Fail",
+      "label": "All Checks Pass?",
       "phase": "local-development",
       "shape": "decision",
       "source": "xml",
       "x": 1398,
       "y": 380
     },
+
     {
       "id": "debug-fix-code",
       "label": "Debug & Fix the Code",
@@ -200,13 +202,16 @@
     },
     {
       "id": "task-failed",
-      "label": "Task Failed",
+      "label": "All Tasks Pass?",
       "phase": "continuous-integration",
       "shape": "decision",
       "source": "xml",
-      "x": 3902,
+      "x": 3912,
       "y": -47
     },
+
+
+
     {
       "id": "pipeline-stops-ci",
       "label": "Pipeline Stops",
@@ -445,7 +450,7 @@
     {
       "from": "fail",
       "to": "debug-fix-code",
-      "label": "Yes"
+      "label": "No"
     },
     {
       "from": "debug-fix-code",
@@ -454,7 +459,7 @@
     {
       "from": "fail",
       "to": "commit-push-code",
-      "label": "No"
+      "label": "Yes"
     },
     {
       "from": "commit-push-code",
@@ -515,7 +520,7 @@
     {
       "from": "task-failed",
       "to": "pipeline-stops-ci",
-      "label": "Yes"
+      "label": "No"
     },
     {
       "from": "pipeline-stops-ci",
@@ -529,8 +534,9 @@
     {
       "from": "task-failed",
       "to": "cd-system",
-      "label": "No"
+      "label": "Yes"
     },
+
     {
       "from": "cd-system",
       "to": "manual-approval-gate"

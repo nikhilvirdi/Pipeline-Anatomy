@@ -469,10 +469,12 @@ function DiagramCanvas() {
         return isLight ? '#4a4a4a' : '#a0a0a0';           // connector-active
       if (state === 'neighbor' || state === 'related')
         return isLight ? '#4a4a4a' : '#a0a0a0';           // accent-primary
-      return isLight ? '#d0d0d0' : '#3a3a3a';             // node-border
+      return isLight ? '#d0d0d0' : '#3a3a3a';             // chrome neutral gray
     },
     [interaction.nodeStates, isLight]
   );
+
+
 
 
   const focusedLabel = focusedNodeId

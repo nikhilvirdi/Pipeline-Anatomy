@@ -44,6 +44,8 @@ export default function FocusedNodeBar({ label, theme }) {
         className={`w-px h-4 ${isLight ? 'bg-[#d0d0d0]' : 'bg-[#3a3a3a]'}`}
       />
 
+
+
       {/* Copy-link button */}
       <button
         type="button"

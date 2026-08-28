@@ -1,14 +1,10 @@
 /**
- * Recomputes node positions in `diagram/diagram-data.json` as clean, consistent
- * horizontal lanes per phase (DIAGRAM_FIXES.md: "Redraw on clean, consistent
- * horizontal lanes per phase — no floating nodes").
+ * Restructures the CI/CD pipeline diagram into distinct horizontal phase blocks.
  *
- * Each phase is laid out as its own left-to-right band with dagre, and the four
- * bands are stacked in pipeline order. Laying the whole graph out as a single
- * left-to-right run instead produces an 8200x320 ribbon — the chain is ~40
- * nodes deep and almost unbranched — which fits to roughly a third of the node
- * size on screen. Banding trades that for ~3000x1200, and gives the phase lanes
- * the docs ask for.
+ * Each phase (Local Development, CI, CD/Deployment, Production) occupies its own
+ * visual lane/block with separation between phases. The overall flow reads
+ * left-to-right across phases, with each phase's internal flow contained within
+ * its own lane (not one continuous strip across the entire canvas).
  *
  * Authoring-time only: the result is baked back into the JSON, so dagre is a
  * devDependency and never ships in the bundle.
@@ -56,24 +52,28 @@ const NODE_SIZES = {
   'monitoring-observability': [182, 67],
 };
 
-// Retry edges. Excluded from ranking so they don't drag a stage backwards into
-// the step that triggers it — they are drawn as loop-backs, and a loop-back is
-// meant to travel against the flow.
+// Loop-back edges that return to earlier nodes in the flow
 const LOOPBACK_EDGES = [
+  ['debug-fix-code', 'local-testing'],
   ['developer-fixes-ci', 'commit-push-code'],
+  ['developer-fixes-cd', 'cd-system'],
   ['rollback', 'notify-developer-team'],
 ];
 
-const RANK_SEP = 80;
-const NODE_SEP = 44;
+const RANK_SEP = 100;
+const NODE_SEP = 60;
 
-// Vertical clearance between one phase band and the next.
-const BAND_GAP = 150;
+// Vertical clearance between one phase block and the next
+const PHASE_GAP = 200;
 
-// Centres closer than this belong on the same lane and get snapped level.
-const LANE_TOLERANCE = 40;
+// Horizontal offset for each new phase block (left-to-right progression)
+const PHASE_HORIZONTAL_OFFSET = 0;
 
-// Minimum clear space required between any two node boxes.
+// Centres closer than this belong on the same lane and get snapped level
+const LANE_TOLERANCE = 50;
+
+// Minimum clear space required between any two node boxes
+const MIN_GAP = 30;ace required between any two node boxes.
 const MIN_GAP = 24;
 
 const data = JSON.parse(readFileSync(DATA_PATH, 'utf8'));

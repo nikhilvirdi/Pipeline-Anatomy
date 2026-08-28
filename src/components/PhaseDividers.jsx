@@ -10,7 +10,7 @@ export default function PhaseDividers({ theme, orientation }) {
   if (orientation === 'vertical') return null;
 
   const strokeColor =
-    theme === 'light' ? 'rgba(0, 0, 0, 0.20)' : 'rgba(255, 255, 255, 0.20)';
+    theme === 'light' ? '#d0d0d0' : '#3a3a3a';
 
   return (
     <svg

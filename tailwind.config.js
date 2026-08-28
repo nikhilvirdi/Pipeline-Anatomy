@@ -9,7 +9,6 @@ export default {
     extend: {
       colors: {
         canvas: 'var(--bg-canvas)',
-        grid: 'var(--bg-dot-grid)',
         // Group A: diagram nodes
         node: 'var(--node-bg)',
         // Group B: UI chrome (sidebar, controls, minimap)
@@ -20,6 +19,7 @@ export default {
         },
         accent: {
           DEFAULT: 'var(--accent-primary)',
+          hover: 'var(--accent-primary)',
           success: 'var(--accent-success)',
           error: 'var(--accent-error)',
           info: 'var(--accent-info)',
@@ -37,10 +37,11 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
-        serif: ['var(--font-serif)', 'serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        serif: ['var(--font-serif)', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
       },
     },
   },
   plugins: [],
 }
+

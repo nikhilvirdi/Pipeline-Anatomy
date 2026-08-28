@@ -16,8 +16,8 @@ export default function ToolbarButton({
   const isLight = theme === 'light';
 
   const idle = isLight
-    ? 'text-slate-600 hover:bg-accent/10 hover:text-accent-hover'
-    : 'text-slate-300 hover:bg-accent/10 hover:text-accent';
+    ? 'text-[#6a6a6a] hover:bg-accent/10 hover:text-accent'
+    : 'text-[#8a8a8a] hover:bg-accent/10 hover:text-accent';
 
   const activeClasses = 'bg-accent/20 text-accent ring-1 ring-accent/40';
 

@@ -7,12 +7,10 @@ export default function DecisionNode({ id, data }) {
   const { label, icons } = data;
   const { dimClass, accentClass } = useNodeHighlight(id);
 
-  const isError = id === 'fail' || id === 'task-failed';
-  
   const handleBg = '!bg-text-muted border-none';
 
   return (
-    <div className={`relative w-40 h-40 flex items-center justify-center ${dimClass} ${isError ? 'node-diamond--error' : ''}`}>
+    <div className={`relative w-40 h-40 flex items-center justify-center ${dimClass}`}>
       {/* Target Handle on Left point */}
       <Handle
         type="target"
@@ -51,16 +49,12 @@ export default function DecisionNode({ id, data }) {
 
       {/* Rotated Diamond Background */}
       <div
-        className={`diamond-bg absolute w-[113px] h-[113px] rotate-45 border transition-all bg-node rounded-sm ${
-          isError ? 'border-accent-error' : 'border-node'
-        } ${accentClass}`}
+        className={`diamond-bg absolute w-[113px] h-[113px] rotate-45 border transition-all bg-node border-node rounded-[4px] ${accentClass}`}
       />
 
       {/* Content rotated back */}
       <div
-        className={`diamond-text relative z-10 p-2.5 text-center text-[17px] font-serif font-semibold italic max-w-[115px] leading-tight select-none ${
-          isError ? 'text-accent-error' : 'text-primary'
-        }`}
+        className="diamond-text relative z-10 p-2.5 text-center text-[17px] font-serif font-semibold italic max-w-[115px] leading-tight select-none text-primary"
       >
         {icons && icons.length > 0 && (
           <div className="flex justify-center items-center gap-1 mb-1">
@@ -74,3 +68,4 @@ export default function DecisionNode({ id, data }) {
     </div>
   );
 }
+

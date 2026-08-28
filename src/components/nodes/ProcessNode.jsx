@@ -12,7 +12,7 @@ export default function ProcessNode({ id, data }) {
 
   return (
     <div
-      className={`px-5 py-4 min-w-[190px] max-w-[280px] text-center transition-all bg-node border border-node ${dimClass} ${accentClass}`}
+      className={`px-5 py-4 rounded-[6px] min-w-[190px] max-w-[280px] text-center transition-all bg-node border border-node ${dimClass} ${accentClass}`}
     >
       <Handle type="target" position={Position.Left} id="left" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default`} />
       <Handle type="target" position={Position.Top} id="top" isConnectable={false} className={`${handleBg} w-3 h-3 cursor-default ${id === 'monitoring-observability' ? '' : 'opacity-0 pointer-events-none'}`} />

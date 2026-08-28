@@ -20,10 +20,10 @@ export default function FocusedNodeBar({ label, theme }) {
 
   return (
     <div
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full border shadow-2xl backdrop-blur-md transition-all ${
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full border shadow-xl backdrop-blur-md transition-all ${
         isLight
-          ? 'bg-white/90 border-slate-200 shadow-slate-300/60'
-          : 'bg-slate-900/90 border-slate-700 shadow-black/70'
+          ? 'bg-white/95 border-[#d0d0d0] text-[#1a1a1a] shadow-black/10'
+          : 'bg-[#161616]/95 border-[#3a3a3a] text-[#f0f0f0] shadow-black/60'
       }`}
       style={{ pointerEvents: 'auto' }}
     >
@@ -32,8 +32,8 @@ export default function FocusedNodeBar({ label, theme }) {
 
       {/* Node label */}
       <span
-        className={`text-xs font-semibold truncate max-w-[220px] ${
-          isLight ? 'text-slate-700' : 'text-slate-200'
+        className={`text-xs font-sans font-semibold truncate max-w-[220px] ${
+          isLight ? 'text-[#1a1a1a]' : 'text-[#f0f0f0]'
         }`}
       >
         {label}
@@ -41,7 +41,7 @@ export default function FocusedNodeBar({ label, theme }) {
 
       {/* Divider */}
       <span
-        className={`w-px h-4 ${isLight ? 'bg-slate-300' : 'bg-slate-600'}`}
+        className={`w-px h-4 ${isLight ? 'bg-[#d0d0d0]' : 'bg-[#3a3a3a]'}`}
       />
 
       {/* Copy-link button */}
@@ -50,14 +50,15 @@ export default function FocusedNodeBar({ label, theme }) {
         id="copy-node-link-btn"
         aria-label="Copy link to this node"
         onClick={handleCopy}
-        className={`flex items-center gap-1.5 text-xs font-semibold transition-colors duration-150 ${
+        className={`flex items-center gap-1.5 text-xs font-sans font-semibold transition-colors duration-150 ${
           copied
             ? 'text-accent'
             : isLight
-            ? 'text-slate-500 hover:text-slate-800'
-            : 'text-slate-400 hover:text-slate-100'
+            ? 'text-[#6a6a6a] hover:text-[#1a1a1a]'
+            : 'text-[#8a8a8a] hover:text-[#f0f0f0]'
         }`}
       >
+
         {copied ? (
           <>
             <svg

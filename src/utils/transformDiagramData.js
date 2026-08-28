@@ -29,7 +29,9 @@ export function edgeId(from, to) {
  */
 export function getTransformedDiagramData(theme = 'dark', orientation = 'horizontal') {
   const isVertical = orientation === 'vertical';
-  const verticalPositions = isVertical ? getVerticalPositions() : null;
+  const verticalLayout = isVertical ? getVerticalPositions() : null;
+  const verticalPositions = verticalLayout?.positions;
+  const phaseStartY = verticalLayout?.phaseStartY;
 
   const nodes = diagramData.nodes.map((node) => {
     let type = 'rect';
@@ -88,7 +90,9 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     return {
       id: `header-${phase.id}`,
       type: 'phaseHeader',
-      position: isVertical ? { x: -100, y: idx * 900 - 60 } : { x: def.x, y: def.y },
+      position: isVertical
+        ? { x: -100, y: (phaseStartY.get(phase.id) ?? idx * 900) - 80 }
+        : { x: def.x, y: def.y },
       selectable: false,
       draggable: false,
       data: {
@@ -169,6 +173,7 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         isLoopback,
         isBidirectional,
         theme,
+        orientation,
       },
     };
   });

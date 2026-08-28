@@ -65,8 +65,15 @@ export function getVerticalPositions() {
   rows.push(currentRow);
 
   const positions = new Map();
+  const phaseStartY = new Map();
 
   rows.forEach((row, rowIndex) => {
+    const phaseId = row[0].phase;
+    const y = rowIndex * ROW_PITCH;
+    if (!phaseStartY.has(phaseId)) {
+      phaseStartY.set(phaseId, y);
+    }
+
     // Lane order in the LTR layout becomes left-to-right order in the row, so
     // a branch that sat above the main line stays on the same side.
     const lanes = [...row].sort((a, b) => a.y - b.y);
@@ -75,11 +82,11 @@ export function getVerticalPositions() {
     lanes.forEach((node, laneIndex) => {
       positions.set(node.id, {
         x: (laneIndex - centreOffset) * COLUMN_GAP,
-        y: rowIndex * ROW_PITCH,
+        y,
       });
     });
   });
 
-  cached = positions;
+  cached = { positions, phaseStartY };
   return cached;
 }

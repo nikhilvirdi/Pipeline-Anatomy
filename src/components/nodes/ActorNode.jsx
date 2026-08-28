@@ -11,7 +11,7 @@ export default function ActorNode({ id, data }) {
 
   return (
     <div
-      className={`px-6 py-4 rounded-md border text-center flex flex-col items-center gap-1.5 min-w-[160px] transition-all bg-node border-node text-primary ${dimClass} ${accentClass}`}
+      className={`px-6 py-4 rounded-[6px] border text-center flex flex-col items-center gap-1.5 min-w-[160px] transition-all bg-node border-node text-primary ${dimClass} ${accentClass}`}
     >
       {icons && icons.length > 0 ? (
         <img src={icons[0]} alt="actor" className="w-10 h-10 object-contain" />

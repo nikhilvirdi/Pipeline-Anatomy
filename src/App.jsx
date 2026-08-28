@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   ReactFlowProvider,
-  Background,
   Controls,
   MiniMap,
   useEdgesState,
@@ -452,7 +451,6 @@ function DiagramCanvas() {
   /* --------------------------------------------------------------- render */
 
   const isLight = theme === 'light';
-  const canvasClass = isLight ? 'canvas-dot-grid-light' : 'canvas-dot-grid-dark';
 
   // Hardcoded hex values — var() doesn't resolve inside React Flow's SVG
   // minimap renderer, so CSS custom properties must not be used here.
@@ -460,20 +458,21 @@ function DiagramCanvas() {
     (node) => {
       const state = interaction.nodeStates.get(node.id);
       if (state === 'focused')
-        return isLight ? '#6B6558' : '#9C9585';           // connector-active
+        return isLight ? '#4a4a4a' : '#a0a0a0';           // connector-active
       if (state === 'neighbor' || state === 'related')
-        return isLight ? '#8A6D3B' : '#C9A24B';           // accent-primary
-      return '#3A362C';                                   // node-border (both modes)
+        return isLight ? '#4a4a4a' : '#a0a0a0';           // accent-primary
+      return isLight ? '#d0d0d0' : '#3a3a3a';             // node-border
     },
     [interaction.nodeStates, isLight]
   );
+
 
   const focusedLabel = focusedNodeId
     ? baseNodeById.get(focusedNodeId)?.data.label
     : null;
 
   return (
-    <div className={`w-screen h-screen relative ${canvasClass}`}>
+    <div className="w-screen h-screen relative bg-canvas">
       {/* Floating Tooltip Popup. On small screens it sits at the bottom of the
           viewport instead of chasing the pointer — a 320px card offset from a
           tap point has nowhere to go on a 375px-wide screen, and anchoring it
@@ -572,8 +571,8 @@ function DiagramCanvas() {
             <PhaseDividers theme={theme} orientation={orientation} />
             <DepthOfField containerRef={canvasRef} />
             <EdgeMarkers />
-            <Background color="transparent" />
             <Controls className={isLight ? 'rf-controls-light' : 'rf-controls-dark'} />
+
             {minimapVisible && (
               <MiniMap
                 pannable
@@ -583,7 +582,7 @@ function DiagramCanvas() {
                 nodeColor={minimapNodeColor}
                 nodeStrokeWidth={0}
                 maskColor={
-                  isLight ? 'rgba(58,54,44,0.07)' : 'rgba(0,0,0,0.25)'
+                  isLight ? 'rgba(208, 215, 222, 0.2)' : 'rgba(13, 17, 23, 0.4)'
                 }
               />
             )}

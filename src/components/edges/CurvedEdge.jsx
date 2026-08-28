@@ -18,13 +18,16 @@ export default function CurvedEdge({
   const isBidirectional = data?.isBidirectional;
   const highlight = useEdgeHighlight(id);
 
-  const isLongLoopback = isLoopback && sourceX - targetX > 300;
+  const isHorizontalLongLoopback =
+    data?.orientation !== 'vertical' && isLoopback && sourceX - targetX > 300;
+  const isVerticalLongLoopback =
+    data?.orientation === 'vertical' && isLoopback && sourceY - targetY > 150;
 
   let edgePath = '';
   let labelX = (sourceX + targetX) / 2;
   let labelY = (sourceY + targetY) / 2;
 
-  if (isLongLoopback) {
+  if (isHorizontalLongLoopback) {
     let marginY = 820;
     if (id.includes('rollback')) {
       marginY = 760;
@@ -44,6 +47,18 @@ export default function CurvedEdge({
       `V ${targetY}`;
     labelX = (sourceX + targetX) / 2;
     labelY = marginY;
+  } else if (isVerticalLongLoopback) {
+    const marginX = -440;
+    const r = 20;
+    edgePath =
+      `M ${sourceX} ${sourceY} ` +
+      `H ${marginX + r} ` +
+      `Q ${marginX} ${sourceY} ${marginX} ${sourceY - r} ` +
+      `V ${targetY + r} ` +
+      `Q ${marginX} ${targetY} ${marginX + r} ${targetY} ` +
+      `H ${targetX}`;
+    labelX = marginX;
+    labelY = (sourceY + targetY) / 2;
   } else {
     const [bezierPath, bX, bY] = getBezierPath({
       sourceX,

@@ -18,7 +18,6 @@ function getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, t
     return { path: `M ${sourceX} ${sourceY} H ${targetX}`, labelX: (sourceX + targetX) / 2, labelY: sourceY };
   }
 
-
   // Pure single 90-degree corners
   if (sourcePosition === 'right' && targetPosition === 'top') {
     return { path: `M ${sourceX} ${sourceY} H ${targetX} V ${targetY}`, labelX: (sourceX + targetX) / 2, labelY: sourceY - 12 };
@@ -88,7 +87,20 @@ export default function CurvedEdge({
   let labelX = (sourceX + targetX) / 2;
   let labelY = (sourceY + targetY) / 2;
 
-  if (data?.orientation !== 'vertical' && isLoopback) {
+  const hasWaypoints = data?.waypoints && Array.isArray(data.waypoints) && data.waypoints.length > 0;
+
+  if (hasWaypoints) {
+    let path = `M ${sourceX} ${sourceY}`;
+    for (const pt of data.waypoints) {
+      path += ` L ${pt.x} ${pt.y}`;
+    }
+    path += ` L ${targetX} ${targetY}`;
+    edgePath = path;
+
+    const midPoint = data.waypoints[Math.floor(data.waypoints.length / 2)];
+    labelX = midPoint ? midPoint.x : (sourceX + targetX) / 2;
+    labelY = midPoint ? midPoint.y - 12 : (sourceY + targetY) / 2;
+  } else if (data?.orientation !== 'vertical' && isLoopback) {
     if (id.includes('developer-fixes-ci') && id.includes('commit-push-code')) {
       const marginY = -140;
       edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
@@ -99,13 +111,7 @@ export default function CurvedEdge({
       edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
       labelX = (sourceX + targetX) / 2;
       labelY = marginY - 12;
-    } else if (id.includes('rollback') && id.includes('notify-developer-team')) {
-      const marginY = -270;
-      edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;
-      labelX = (sourceX + targetX) / 2;
-      labelY = marginY - 12;
     } else {
-
       const result = getOrthogonalPath(sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition);
       edgePath = result.path;
       labelX = result.labelX;
@@ -117,8 +123,6 @@ export default function CurvedEdge({
     labelX = result.labelX;
     labelY = result.labelY;
   }
-
-
 
   const upperLabel = (label || '').toUpperCase().trim();
   const isPassBranch = ['YES', 'PASS', 'APPROVED'].includes(upperLabel);
@@ -181,7 +185,6 @@ export default function CurvedEdge({
   const isHorizontal = sourcePosition === 'left' || sourcePosition === 'right';
   const labelOffsetX = isHorizontal ? 0 : 12;
   const labelOffsetY = isHorizontal ? -12 : 0;
-
 
   return (
     <>

@@ -212,13 +212,23 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
       } else if (edge.from === 'manual-approval-gate' && edge.to === 'fetch-build-artifacts') {
         sourceHandle = 'right';
         targetHandle = 'left';
+      } else if (edge.from === 'fetch-build-artifacts' && edge.to === 'inject-config-secrets') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'inject-config-secrets' && edge.to === 'package-container-image') {
+        sourceHandle = 'right';
+        targetHandle = 'left';
+      } else if (edge.from === 'package-container-image' && edge.to === 'push-image-docker-hub') {
+        sourceHandle = 'right';
+        targetHandle = 'top';
       } else if (edge.from === 'push-image-docker-hub' && edge.to === 'pull-image-and-deploy') {
-        sourceHandle = 'source-bottom';
+        sourceHandle = 'right';
         targetHandle = 'left';
       } else if (edge.from === 'developer-fixes-cd' && edge.to === 'cd-system') {
         sourceHandle = 'source-top';
         targetHandle = 'top';
       }
+
 
       // Phase 04: Production
       else if (edge.from === 'run-health-check' && edge.to === 'all-checks-pass') {
@@ -276,8 +286,10 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         isBidirectional,
         theme,
         orientation,
+        waypoints: edge.waypoints,
       },
     };
+
   });
 
   nodes.forEach((n) => {

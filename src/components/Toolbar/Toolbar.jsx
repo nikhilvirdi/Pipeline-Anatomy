@@ -4,11 +4,14 @@ import { useTheme } from '../../context/ThemeContext';
 import { useToolbarDock } from '../../hooks/useToolbarDock';
 import PhaseFilterPanel from './PhaseFilterPanel';
 import SearchPanel from './SearchPanel';
+import ExportMenu from './ExportMenu';
 import ToolbarButton from './ToolbarButton';
 import {
   DockIcon,
+  ExportIcon,
   MoonIcon,
   PhaseFilterIcon,
+  ResetLayoutIcon,
   ResetViewIcon,
   SearchIcon,
   SunIcon,
@@ -22,6 +25,9 @@ import {
  */
 export default function Toolbar({
   onResetView,
+  onResetLayout,
+  onExportPng,
+  onExportSvg,
   phases = [],
   phaseCounts = {},
   hiddenPhases,
@@ -31,6 +37,9 @@ export default function Toolbar({
   onJumpToNode,
   isSmallScreen = false,
 }) {
+
+
+
 
   const { theme, toggleTheme } = useTheme();
   const { ref, edge, position, dragging, vertical, handlers, cycleEdge } =
@@ -129,6 +138,14 @@ export default function Toolbar({
       />
 
       <ToolbarButton
+        label="Reset layout"
+        icon={<ResetLayoutIcon />}
+        theme={theme}
+        onClick={onResetLayout}
+      />
+
+
+      <ToolbarButton
         label="Filter phases"
         icon={<PhaseFilterIcon />}
         theme={theme}
@@ -137,8 +154,28 @@ export default function Toolbar({
         onClick={() => togglePanel('phases')}
       />
 
-      <div className={dividerClass} />
+      <div className="relative">
+        <ToolbarButton
+          label="Export diagram"
+          icon={<ExportIcon />}
+          theme={theme}
+          active={openPanel === 'export'}
+          pressed={openPanel === 'export'}
+          onClick={() => togglePanel('export')}
+        />
 
+        {openPanel === 'export' && (
+          <ExportMenu
+            edge={edge}
+            theme={theme}
+            onExportPng={onExportPng}
+            onExportSvg={onExportSvg}
+            onClose={closePanel}
+          />
+        )}
+      </div>
+
+      <div className={dividerClass} />
 
       <ToolbarButton
         label={`Move toolbar (docked ${edge})`}
@@ -169,6 +206,8 @@ export default function Toolbar({
           onClose={closePanel}
         />
       )}
+
+
     </div>
   );
 }

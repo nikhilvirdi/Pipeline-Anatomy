@@ -3,10 +3,14 @@ import {
   ReactFlow,
   ReactFlowProvider,
   Controls,
+  getNodesBounds,
   useEdgesState,
   useNodesState,
   useReactFlow,
 } from '@xyflow/react';
+import { toPng, toSvg } from 'html-to-image';
+
+
 
 import '@xyflow/react/dist/style.css';
 
@@ -62,8 +66,9 @@ const FOCUS_VIEW_OPTIONS = { padding: 0.2, minZoom: 0.4, maxZoom: 1.5 };
 
 function DiagramCanvas() {
   const { theme } = useTheme();
-  const { fitView, setViewport, getNodes } = useReactFlow();
+  const { fitView, setViewport, getNodes, getEdges } = useReactFlow();
   const canvasRef = useRef(null);
+
 
 
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
@@ -83,6 +88,9 @@ function DiagramCanvas() {
   const [focusedNodeId, setFocusedNodeId] = useState(null);
   const [keyboardNodeId, setKeyboardNodeId] = useState(null);
   const [hiddenPhases, setHiddenPhases] = useState(() => new Set());
+  const [toastMessage, setToastMessage] = useState(null);
+  const toastTimeoutRef = useRef(null);
+
 
 
   const hiddenNodeIds = useMemo(() => {
@@ -409,6 +417,34 @@ function DiagramCanvas() {
     setViewport(target, { duration: TRANSITION_MS });
   }, [clearFocus, orientation, setViewport]);
 
+  const handleResetLayout = useCallback(() => {
+    // Reset all node positions back to original baked layout
+    setNodes((current) =>
+      current.map((node) => {
+        const source = baseNodeById.get(node.id);
+        if (!source) return node;
+        return {
+          ...node,
+          position: { ...source.position },
+        };
+      })
+    );
+
+    // Reset viewport back to default landing view
+    clearFocus();
+    setHoveredNodeId(null);
+    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
+    setViewport(target, { duration: TRANSITION_MS });
+
+    // Brief confirmation toast
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToastMessage('Layout reset to default');
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage(null);
+    }, 2000);
+  }, [baseNodeById, clearFocus, orientation, setNodes, setViewport]);
+
+
   const handleTogglePhase = useCallback((phaseId) => {
     setHiddenPhases((current) => {
       const next = new Set(current);
@@ -450,12 +486,50 @@ function DiagramCanvas() {
     [focusNode]
   );
 
+  const handleExportDiagram = useCallback((format = 'png') => {
+    const activeNodes = getNodes();
+    if (!activeNodes || activeNodes.length === 0) return;
+
+    const nodesBounds = getNodesBounds(activeNodes);
+    const padding = 80;
+    const imageWidth = Math.ceil(nodesBounds.width + padding * 2);
+    const imageHeight = Math.ceil(nodesBounds.height + padding * 2);
+
+    const viewportElement = document.querySelector('.react-flow__viewport');
+    if (!viewportElement) return;
+
+    const isLightMode = theme === 'light';
+    const bgColor = isLightMode ? '#ffffff' : '#000000';
+    const exportFn = format === 'svg' ? toSvg : toPng;
+    const filename = `pipeline-anatomy-export.${format}`;
+
+    exportFn(viewportElement, {
+      backgroundColor: bgColor,
+      width: imageWidth,
+      height: imageHeight,
+      style: {
+        width: `${imageWidth}px`,
+        height: `${imageHeight}px`,
+        transform: `translate(${-(nodesBounds.x - padding)}px, ${-(nodesBounds.y - padding)}px) scale(1)`,
+      },
+    })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error(`Failed to export diagram as ${format.toUpperCase()}:`, err);
+      });
+  }, [getNodes, theme]);
+
+  const handleExportPng = useCallback(() => handleExportDiagram('png'), [handleExportDiagram]);
+  const handleExportSvg = useCallback(() => handleExportDiagram('svg'), [handleExportDiagram]);
+
   /* --------------------------------------------------------------- render */
 
   const isLight = theme === 'light';
-
-
-
 
   const focusedLabel = focusedNodeId
     ? baseNodeById.get(focusedNodeId)?.data.label
@@ -464,6 +538,12 @@ function DiagramCanvas() {
   return (
     <div className="w-screen h-screen relative bg-canvas">
       {/* Floating Tooltip Popup. On small screens it sits at the bottom of the
+
+
+
+
+
+
           viewport instead of chasing the pointer — a 320px card offset from a
           tap point has nowhere to go on a 375px-wide screen, and anchoring it
           keeps it clear of the finger that opened it. */}
@@ -495,9 +575,25 @@ function DiagramCanvas() {
         />
       )}
 
+      {/* Toast confirmation for layout reset / actions */}
+      {toastMessage && (
+        <div
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-3.5 py-1.5 rounded-full text-xs font-sans font-medium border shadow-lg backdrop-blur-md transition-all select-none pointer-events-none ${
+            isLight
+              ? 'bg-white/95 border-[#d0d0d0] text-[#1a1a1a] shadow-black/10'
+              : 'bg-[#161616]/95 border-[#3a3a3a] text-[#f0f0f0] shadow-black/60'
+          }`}
+        >
+          {toastMessage}
+        </div>
+      )}
+
       {/* Floating Toolbar (Phase 6) */}
       <Toolbar
         onResetView={handleResetView}
+        onResetLayout={handleResetLayout}
+        onExportPng={handleExportPng}
+        onExportSvg={handleExportSvg}
         phases={base.phases}
         phaseCounts={phaseCounts}
         hiddenPhases={hiddenPhases}
@@ -507,6 +603,9 @@ function DiagramCanvas() {
         onJumpToNode={handleJumpToNode}
         isSmallScreen={isSmallScreen}
       />
+
+
+
 
       {/* Announces keyboard navigation for screen readers */}
       <div className="sr-only" aria-live="polite">

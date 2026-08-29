@@ -54,7 +54,6 @@
       "x": 1061,
       "y": 200
     },
-
     {
       "id": "fail",
       "label": "All Checks Pass?",
@@ -64,7 +63,6 @@
       "x": 1398,
       "y": 380
     },
-
     {
       "id": "debug-fix-code",
       "label": "Debug & Fix the Code",
@@ -80,8 +78,8 @@
       "phase": "local-development",
       "shape": "rect",
       "source": "xml",
-      "x": 1587,
-      "y": 182
+      "x": 1660,
+      "y": 179
     },
     {
       "id": "github",
@@ -125,8 +123,8 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 2768,
-      "y": 413
+      "x": 2769,
+      "y": 419
     },
     {
       "id": "ci-system",
@@ -135,7 +133,7 @@
       "shape": "rect",
       "source": "xml",
       "x": 3063,
-      "y": 388
+      "y": 393
     },
     {
       "id": "install-dependencies",
@@ -170,7 +168,7 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "authored-split",
-      "x": 3629,
+      "x": 3647,
       "y": 754
     },
     {
@@ -197,7 +195,7 @@
       "phase": "continuous-integration",
       "shape": "rect",
       "source": "xml",
-      "x": 3887,
+      "x": 3875,
       "y": 227
     },
     {
@@ -206,20 +204,17 @@
       "phase": "continuous-integration",
       "shape": "decision",
       "source": "xml",
-      "x": 3912,
-      "y": -47
+      "x": 3902,
+      "y": -44
     },
-
-
-
     {
       "id": "pipeline-stops-ci",
       "label": "Pipeline Stops",
       "phase": "continuous-integration",
       "shape": "circle",
       "source": "xml",
-      "x": 3610,
-      "y": 150
+      "x": 3570,
+      "y": 145
     },
     {
       "id": "developer-fixes-ci",
@@ -272,8 +267,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 4769,
-      "y": 292
+      "x": 4768,
+      "y": 293
     },
     {
       "id": "package-container-image",
@@ -281,8 +276,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "x": 5081,
-      "y": 278
+      "x": 5068,
+      "y": 279
     },
     {
       "id": "push-image-docker-hub",
@@ -290,8 +285,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "authored-split",
-      "x": 5450,
-      "y": 444
+      "x": 5337,
+      "y": 457
     },
     {
       "id": "pull-image-and-deploy",
@@ -299,7 +294,7 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 5636,
+      "x": 5643,
       "y": 291
     },
     {
@@ -308,8 +303,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 5962,
-      "y": 359
+      "x": 5993,
+      "y": 362
     },
     {
       "id": "run-smoke-tests",
@@ -344,8 +339,8 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 6605,
-      "y": -72
+      "x": 6608,
+      "y": -75
     },
     {
       "id": "developer-fixes-cd",
@@ -362,7 +357,7 @@
       "phase": "continuous-delivery-deployment",
       "shape": "rect",
       "source": "xml",
-      "x": 7187,
+      "x": 7224,
       "y": 39
     },
     {
@@ -389,8 +384,8 @@
       "phase": "production",
       "shape": "rect",
       "source": "xml",
-      "x": 7302,
-      "y": -196
+      "x": 7410,
+      "y": -195
     },
     {
       "id": "end-users",
@@ -407,7 +402,7 @@
       "phase": "production",
       "shape": "circle",
       "source": "xml",
-      "x": 8652,
+      "x": 8636,
       "y": -53
     },
     {
@@ -417,10 +412,9 @@
       "shape": "rect",
       "source": "xml",
       "x": 8240,
-      "y": 241
+      "y": 164
     }
-  ]
-,
+  ],
   "edges": [
     {
       "from": "developer",
@@ -536,7 +530,6 @@
       "to": "cd-system",
       "label": "Yes"
     },
-
     {
       "from": "cd-system",
       "to": "manual-approval-gate"
@@ -618,7 +611,21 @@
     {
       "from": "rollback",
       "to": "notify-developer-team",
-      "note": "cross-phase loop back into CD's notify node"
+      "note": "cross-phase loop back into CD's notify node",
+      "waypoints": [
+        {
+          "x": 7318,
+          "y": -167
+        },
+        {
+          "x": 7317,
+          "y": -168
+        },
+        {
+          "x": 6707,
+          "y": -169
+        }
+      ]
     },
     {
       "from": "post-production-health-check",

@@ -69,7 +69,13 @@ function DiagramCanvas() {
   const { fitView, setViewport, getNodes, getEdges } = useReactFlow();
   const canvasRef = useRef(null);
 
-
+  // TEMP: mobile layout fix only — stores the toolbar's live positionRef
+  // forwarded up from Toolbar via onPositionRef. Only populated on mobile.
+  // Does not affect desktop. Remove after layout finalized.
+  const toolbarPosRef = useRef(null);
+  const handleToolbarPositionRef = useCallback((ref) => {
+    toolbarPosRef.current = ref;
+  }, []);
 
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const isTouch = useMediaQuery(TOUCH_QUERY);
@@ -514,9 +520,26 @@ function DiagramCanvas() {
       },
     })
       .then((dataUrl) => {
+        let finalDataUrl = dataUrl;
+
+        if (format === 'svg') {
+          // toCanvas (used by toPng) fillRects the background before drawing;
+          // toSvg has no equivalent, so a bg <rect> must be inserted manually.
+          const svgMarkup = decodeURIComponent(dataUrl.substring(dataUrl.indexOf(',') + 1));
+          const svgRoot = new DOMParser().parseFromString(svgMarkup, 'image/svg+xml').documentElement;
+          const bgRect = svgRoot.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          bgRect.setAttribute('x', '0');
+          bgRect.setAttribute('y', '0');
+          bgRect.setAttribute('width', `${imageWidth}`);
+          bgRect.setAttribute('height', `${imageHeight}`);
+          bgRect.setAttribute('fill', bgColor);
+          svgRoot.insertBefore(bgRect, svgRoot.firstChild);
+          finalDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svgRoot))}`;
+        }
+
         const link = document.createElement('a');
         link.download = filename;
-        link.href = dataUrl;
+        link.href = finalDataUrl;
         link.click();
       })
       .catch((err) => {
@@ -526,6 +549,64 @@ function DiagramCanvas() {
 
   const handleExportPng = useCallback(() => handleExportDiagram('png'), [handleExportDiagram]);
   const handleExportSvg = useCallback(() => handleExportDiagram('svg'), [handleExportDiagram]);
+
+  // ============================================================================
+  // TEMP: mobile layout fix only — does not affect desktop.
+  // Dev-only export for mobile layout positioning.
+  // Triggered via Ctrl+Shift+M or on-screen button (mobile viewport only).
+  // Captures node positions, edge handles, and toolbar screen coordinates,
+  // then downloads as mobile-layout-export.json for permanent bake-in.
+  // Remove after layout finalized.
+  // ============================================================================
+  const exportMobileLayout = useCallback(() => {
+    if (!isSmallScreen) return; // strict mobile-only guard
+    const currentNodes = getNodes();
+    const currentEdges = getEdges();
+    const toolbarPos = toolbarPosRef.current?.current ?? null;
+
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      viewport: 'mobile-vertical',
+      toolbar: toolbarPos ? { x: Math.round(toolbarPos.x), y: Math.round(toolbarPos.y) } : null,
+      nodes: currentNodes.map((n) => ({
+        id: n.id,
+        label: n.data?.label || '',
+        position: {
+          x: Math.round(n.position.x),
+          y: Math.round(n.position.y),
+        },
+      })),
+      edges: currentEdges.map((e) => ({
+        id: e.id,
+        from: e.source,
+        to: e.target,
+        sourceHandle: e.sourceHandle,
+        targetHandle: e.targetHandle,
+        waypoints: e.data?.waypoints || undefined,
+      })),
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mobile-layout-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    console.log('[TEMP] Mobile layout exported:', payload);
+  }, [isSmallScreen, getNodes, getEdges]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return undefined;
+    const handleDevKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        exportMobileLayout();
+      }
+    };
+    window.addEventListener('keydown', handleDevKey);
+    return () => window.removeEventListener('keydown', handleDevKey);
+  }, [exportMobileLayout]);
 
   /* --------------------------------------------------------------- render */
 
@@ -602,7 +683,22 @@ function DiagramCanvas() {
         searchNodes={searchNodes}
         onJumpToNode={handleJumpToNode}
         isSmallScreen={isSmallScreen}
+        onPositionRef={handleToolbarPositionRef}
       />
+
+      {/* TEMP: mobile layout fix only — dev-only export button, mobile viewport
+           only. Not wired into production build (guarded by import.meta.env.DEV
+           and isSmallScreen). Remove after layout finalized. */}
+      {import.meta.env.DEV && isSmallScreen && (
+        <button
+          type="button"
+          onClick={exportMobileLayout}
+          className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-semibold shadow-lg active:scale-95 transition-all cursor-pointer select-none"
+          title="Export mobile node positions and toolbar coords as mobile-layout-export.json (Ctrl+Shift+M)"
+        >
+          📱 Export Mobile Layout (Ctrl+Shift+M)
+        </button>
+      )}
 
 
 

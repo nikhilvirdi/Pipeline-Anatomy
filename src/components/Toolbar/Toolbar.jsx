@@ -36,15 +36,30 @@ export default function Toolbar({
   searchNodes = [],
   onJumpToNode,
   isSmallScreen = false,
+  // TEMP: mobile layout fix only — callback to hand the positionRef up to
+  // App.jsx so the dev export can capture live toolbar coords. Not used on
+  // desktop (isSmallScreen stays false). Remove after layout finalized.
+  onPositionRef,
 }) {
 
 
 
 
   const { theme, toggleTheme } = useTheme();
-  const { ref, edge, position, dragging, vertical, handlers, cycleEdge } =
-    useToolbarDock('left', isSmallScreen ? 'top' : null);
+  // TEMP: mobile layout fix only — freeDrag=true on mobile means the toolbar
+  // stays wherever it was dropped instead of snapping to a viewport edge.
+  // Desktop passes freeDrag=false (default) so its behaviour is unchanged.
+  const { ref, edge, position, positionRef, dragging, vertical, handlers, cycleEdge } =
+    useToolbarDock('left', isSmallScreen ? 'top' : null, isSmallScreen);
   const [openPanel, setOpenPanel] = useState(null);
+
+  // TEMP: mobile layout fix only — forward positionRef to App.jsx
+  useEffect(() => {
+    if (isSmallScreen && onPositionRef) {
+      onPositionRef(positionRef);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSmallScreen, onPositionRef]);
 
   const closePanel = useCallback(() => setOpenPanel(null), []);
 

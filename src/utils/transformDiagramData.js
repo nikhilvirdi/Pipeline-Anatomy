@@ -94,7 +94,9 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         ? { x: -100, y: (phaseStartY.get(phase.id) ?? idx * 900) - 80 }
         : { x: def.x, y: def.y },
       selectable: false,
-      draggable: false,
+      // TEMP: mobile layout fix only — draggable on vertical so headers can be
+      // repositioned manually; locked false on desktop (does not affect desktop).
+      draggable: isVertical,
       data: {
         label: phaseCard?.title || phase.label,
         phase: phase.id,

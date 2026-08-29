@@ -37,8 +37,12 @@ function nearestEdge(pos, size) {
  * Position is always driven through left/top pixel values (never a mix of
  * left/right/transform) so a dock change animates as a single smooth move
  * between two coordinates, per the 200ms snap in THEME_TOKENS.md.
+ *
+ * freeDrag (TEMP: mobile layout fix only — does not affect desktop):
+ * When true, skip edge-snapping on release so the toolbar stays wherever
+ * it was dropped. Used to manually place the toolbar at mobile viewport.
  */
-export function useToolbarDock(initialEdge = 'left', autoDockEdge = null) {
+export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDrag = false) {
   const ref = useRef(null);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
@@ -159,13 +163,22 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null) {
       suppressClickRef.current = false;
     }, 0);
 
+    // TEMP: mobile layout fix only — freeDrag skips edge-snap so the toolbar
+    // stays exactly where it was dropped. freeDrag=false (desktop default) is
+    // completely unaffected.
+    if (freeDrag) {
+      setDragging(false);
+      setSnapTick((tick) => tick + 1);
+      return;
+    }
+
     // Snap from where the pill was dropped, not from its rect — the rect can
     // still be animating from the previous dock and would pick that edge again.
     const dropped = positionRef.current;
     if (dropped) setEdge(nearestEdge(dropped, measure()));
     setDragging(false);
     setSnapTick((tick) => tick + 1);
-  }, [measure]);
+  }, [freeDrag, measure]);
 
   const onPointerUp = useCallback(
     (event) => {
@@ -205,6 +218,9 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null) {
     ref,
     edge,
     position,
+    // TEMP: mobile layout fix only — positionRef lets the export capture live
+    // toolbar coordinates without subscribing to position state updates.
+    positionRef,
     dragging,
     vertical: isVerticalEdge(edge),
     cycleEdge,

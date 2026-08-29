@@ -3,25 +3,12 @@ import React from 'react';
 export default function NodeTooltip({ node, theme }) {
   if (!node || !node.data) return null;
 
-  const { label, title, phase, cardText, bullets } = node.data;
-
-  // Format phase label cleanly (e.g. local-development -> LOCAL DEVELOPMENT)
-  const formattedPhase = phase
-    ? phase.replace(/-/g, ' ').toUpperCase()
-    : 'PIPELINE STEP';
-
+  const { label, title, cardText, bullets } = node.data;
   const cardTitle = title || label;
   const isPhaseCard = bullets && bullets.length > 0;
 
   return (
     <div className="hover-card pointer-events-none">
-      {/* Phase badge — hidden on phase cards (title is self-describing) */}
-      {!isPhaseCard && (
-        <span className="hover-card__tag">
-          {formattedPhase}
-        </span>
-      )}
-      
       <div className="hover-card__title">
         {cardTitle}
       </div>
@@ -43,3 +30,4 @@ export default function NodeTooltip({ node, theme }) {
     </div>
   );
 }
+

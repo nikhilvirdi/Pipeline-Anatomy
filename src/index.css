@@ -27,9 +27,9 @@
   --text-primary: #1a1a1a;
   --text-muted: #6a6a6a;
   --accent-primary: #4a4a4a;
-  --accent-success: #1a7f37;
-  --accent-error: #cf222e;
-  --accent-warning: #9a6700;
+  --accent-success: #0d652d;
+  --accent-error: #a40e26;
+  --accent-warning: #7c4800;
   --accent-info: #4a4a4a;
   --connector-line: #000000;
   --connector-active: #4a4a4a;
@@ -59,6 +59,7 @@
   --connector-line: #ffffff;
   --connector-active: #a0a0a0;
 }
+
 
 
 
@@ -134,7 +135,7 @@ html, body, #root {
   background: var(--chrome-bg);
   border: 1px solid var(--chrome-border);
   border-radius: 6px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   max-width: 320px;
   box-shadow:
     0 1px 3px rgba(31, 35, 40, 0.12),
@@ -147,6 +148,7 @@ html, body, #root {
 /* Phase-summary cards (bullets) are slightly wider — they need it for lists */
 .hover-card:has(.hover-card__list) {
   max-width: 380px;
+  padding: 14px 16px;
 }
 
 .dark .hover-card {
@@ -159,7 +161,7 @@ html, body, #root {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Phase badge inside the card */
+/* Phase badge inside the card (legacy/phase cards) */
 .hover-card__tag {
   display: inline-block;
   font-family: var(--font-sans);
@@ -181,9 +183,11 @@ html, body, #root {
   font-weight: 600;
   font-size: 15px;
   color: var(--text-primary);
-  margin-bottom: 7px;
-  line-height: 1.3;
+  margin-top: 0;
+  margin-bottom: 6px;
+  line-height: 1.35;
 }
+
 
 /* Card body: sans-serif, comfortable reading size */
 .hover-card__body {
@@ -256,12 +260,17 @@ html, body, #root {
   border-radius: 6px;
 }
 
-/* Ensure light mode border propagates through React Flow wrapper */
-.light .react-flow__node {
-  border-color: var(--node-border);
+/* Ensure node borders strictly use --node-border without override */
+.border-node,
+.diamond-bg,
+.react-flow__node .border-node,
+.react-flow__node .diamond-bg,
+.react-flow__node [class*="border-node"] {
+  border-color: var(--node-border) !important;
 }
 
 /* Node highlight transitions */
+
 .rf-node-state {
   transition: opacity 300ms ease-out, border-color 300ms ease-out, box-shadow 300ms ease-out;
 }

@@ -379,7 +379,7 @@ function DiagramCanvas() {
   /* -------------------------------------------------------------- exports */
 
   const handleExportDiagram = useCallback(
-    async (format = 'png') => {
+    async (format = 'png', bgChoice = 'theme') => {
       const el = canvasRef.current?.querySelector('.react-flow__viewport');
       if (!el) return;
 
@@ -393,9 +393,10 @@ function DiagramCanvas() {
 
       const isLight = theme === 'light';
       const backgroundColor = isLight ? '#ffffff' : '#000000';
+      const isTransparent = format === 'svg' && bgChoice === 'transparent';
 
       const options = {
-        backgroundColor,
+        backgroundColor: isTransparent ? undefined : backgroundColor,
         width: exportWidth,
         height: exportHeight,
         style: {
@@ -407,13 +408,39 @@ function DiagramCanvas() {
       };
 
       try {
-        const dataUrl =
-          format === 'svg' ? await toSvg(el, options) : await toPng(el, options);
+        if (format === 'svg') {
+          const dataUrl = await toSvg(el, options);
 
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = `pipeline-anatomy-${theme}.${format}`;
-        a.click();
+          let svgText = '';
+          if (dataUrl.includes(';base64,')) {
+            svgText = atob(dataUrl.split(';base64,')[1]);
+          } else {
+            const parts = dataUrl.split(',');
+            svgText = decodeURIComponent(parts.slice(1).join(','));
+          }
+
+          // If matching current theme, inject a full solid background <rect> right at the start of SVG
+          // so there are zero transparent gaps across the entire canvas bounding box.
+          if (bgChoice === 'theme') {
+            const bgRect = `<rect width="100%" height="100%" fill="${backgroundColor}"/>`;
+            svgText = svgText.replace(/(<svg[^>]*>)/i, `$1${bgRect}`);
+          }
+
+          const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const bgSuffix = bgChoice === 'transparent' ? '-transparent' : '';
+          a.download = `pipeline-anatomy-${theme}${bgSuffix}.svg`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } else {
+          const dataUrl = await toPng(el, options);
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = `pipeline-anatomy-${theme}.png`;
+          a.click();
+        }
       } catch (err) {
         console.error('Export failed', err);
       }
@@ -422,7 +449,7 @@ function DiagramCanvas() {
   );
 
   const handleExportPng = useCallback(() => handleExportDiagram('png'), [handleExportDiagram]);
-  const handleExportSvg = useCallback(() => handleExportDiagram('svg'), [handleExportDiagram]);
+  const handleExportSvg = useCallback((bgChoice = 'theme') => handleExportDiagram('svg', bgChoice), [handleExportDiagram]);
 
   /* -------------------------------------------------------------- toolbar */
 

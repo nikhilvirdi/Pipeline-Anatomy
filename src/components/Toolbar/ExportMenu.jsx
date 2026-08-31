@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const PLACEMENT = {
   left: 'left-full top-0 ml-2.5',
@@ -9,7 +9,8 @@ const PLACEMENT = {
 
 /**
  * Compact dropdown popover menu for PNG and SVG exports.
- * Anchored directly to the export toolbar button for exact vertical alignment.
+ * Anchored directly to the export toolbar button for exact alignment.
+ * For SVG export, provides a follow-up background choice (theme match vs transparent).
  */
 export default function ExportMenu({
   edge = 'left',
@@ -18,6 +19,7 @@ export default function ExportMenu({
   onExportSvg,
   onClose,
 }) {
+  const [step, setStep] = useState('format'); // 'format' | 'svg-bg'
   const isLight = theme === 'light';
 
   const handleSelectPng = (e) => {
@@ -26,15 +28,26 @@ export default function ExportMenu({
     onClose?.();
   };
 
-  const handleSelectSvg = (e) => {
+  const handleSelectSvgFormat = (e) => {
     e.stopPropagation();
-    onExportSvg?.();
+    setStep('svg-bg');
+  };
+
+  const handleSelectSvgThemeBg = (e) => {
+    e.stopPropagation();
+    onExportSvg?.('theme');
+    onClose?.();
+  };
+
+  const handleSelectSvgTransparentBg = (e) => {
+    e.stopPropagation();
+    onExportSvg?.('transparent');
     onClose?.();
   };
 
   return (
     <div
-      className={`absolute z-50 whitespace-nowrap min-w-[135px] p-1 rounded-lg select-none shadow-xl border backdrop-blur-md transition-all
+      className={`absolute z-50 whitespace-nowrap min-w-[145px] p-1 rounded-lg select-none shadow-xl border backdrop-blur-md transition-all
         ${PLACEMENT[edge] || PLACEMENT.left}
         ${
           isLight
@@ -48,23 +61,48 @@ export default function ExportMenu({
       onClick={(event) => event.stopPropagation()}
     >
       <div className="flex flex-col gap-0.5">
-        <button
-          type="button"
-          onClick={handleSelectPng}
-          className={`flex items-center w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
-            ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
-        >
-          Export as PNG
-        </button>
+        {step === 'format' ? (
+          <>
+            <button
+              type="button"
+              onClick={handleSelectPng}
+              className={`flex items-center w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
+                ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
+            >
+              Export as PNG
+            </button>
 
-        <button
-          type="button"
-          onClick={handleSelectSvg}
-          className={`flex items-center w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
-            ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
-        >
-          Export as SVG
-        </button>
+            <button
+              type="button"
+              onClick={handleSelectSvgFormat}
+              className={`flex items-center justify-between w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
+                ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
+            >
+              <span>Export as SVG</span>
+              <span className="text-[10px] opacity-60 ml-1.5">›</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={handleSelectSvgThemeBg}
+              className={`flex items-center w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
+                ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
+            >
+              Match current theme
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSelectSvgTransparentBg}
+              className={`flex items-center w-full px-3 py-1.5 rounded-md text-xs font-sans font-medium transition-colors text-left cursor-pointer
+                ${isLight ? 'hover:bg-black/5 text-[#1a1a1a]' : 'hover:bg-white/10 text-[#f0f0f0]'}`}
+            >
+              Transparent
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

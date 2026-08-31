@@ -38,12 +38,12 @@ function nearestEdge(pos, size) {
  * left/right/transform) so a dock change animates as a single smooth move
  * between two coordinates, per the 200ms snap in THEME_TOKENS.md.
  */
-export function useToolbarDock(initialEdge = 'left') {
+export function useToolbarDock(initialEdge = 'left', autoDockEdge = null) {
   const ref = useRef(null);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
 
-  const [edge, setEdge] = useState(initialEdge);
+  const [edge, setEdge] = useState(autoDockEdge ?? initialEdge);
   const [position, setPosition] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [snapTick, setSnapTick] = useState(0);
@@ -87,6 +87,14 @@ export function useToolbarDock(initialEdge = 'left') {
     window.addEventListener('resize', snap);
     return () => window.removeEventListener('resize', snap);
   }, [applyPosition, dockedPosition, dragging, edge, measure, snapTick]);
+
+  // Auto-dock on breakpoint changes (e.g. mobile docks to top, desktop to left)
+  const previousAutoDock = useRef(autoDockEdge);
+  useEffect(() => {
+    if (autoDockEdge === previousAutoDock.current) return;
+    previousAutoDock.current = autoDockEdge;
+    setEdge(autoDockEdge ?? initialEdge);
+  }, [autoDockEdge, initialEdge]);
 
   const onPointerDown = useCallback(
     (event) => {

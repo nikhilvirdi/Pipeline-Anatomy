@@ -71,10 +71,10 @@ export function getTransformedDiagramData(theme = 'dark') {
 
   const headerNodes = diagramData.phases.map((phase, idx) => {
     const headerDefs = {
-      'local-development': { x: -20, y: -70, step: 'PHASE 01' },
-      'continuous-integration': { x: 2200, y: -70, step: 'PHASE 02' },
-      'continuous-delivery-deployment': { x: 4160, y: -70, step: 'PHASE 03' },
-      'production': { x: 5740, y: -70, step: 'PHASE 04' },
+      'local-development': { x: 532, y: -37, step: 'PHASE 01' },
+      'continuous-integration': { x: 2456, y: -25, step: 'PHASE 02' },
+      'continuous-delivery-deployment': { x: 4572, y: -103, step: 'PHASE 03' },
+      'production': { x: 6046, y: -105, step: 'PHASE 04' },
     };
     const def = headerDefs[phase.id] || { x: 0, y: idx * 400, step: `PHASE 0${idx + 1}` };
     const phaseCard = phaseCards[phase.id];

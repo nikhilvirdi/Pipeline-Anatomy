@@ -63,7 +63,7 @@ const FOCUS_VIEW_OPTIONS = { padding: 0.2, minZoom: 0.4, maxZoom: 1.5 };
 
 function DiagramCanvas() {
   const { theme } = useTheme();
-  const { fitView, setViewport, getNodes } = useReactFlow();
+  const { fitView, setViewport, getNodes, getEdges } = useReactFlow();
   const canvasRef = useRef(null);
 
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
@@ -536,6 +536,7 @@ function DiagramCanvas() {
         onShowAllPhases={handleShowAllPhases}
         searchNodes={searchNodes}
         onJumpToNode={handleJumpToNode}
+        isSmallScreen={isSmallScreen}
       />
 
       {/* Announces keyboard navigation for screen readers */}

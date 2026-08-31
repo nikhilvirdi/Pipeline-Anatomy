@@ -35,10 +35,12 @@ export default function Toolbar({
   onShowAllPhases,
   searchNodes = [],
   onJumpToNode,
+  isSmallScreen = false,
 }) {
   const { theme, toggleTheme } = useTheme();
+  const defaultDock = isSmallScreen ? 'top' : 'left';
   const { ref, edge, position, dragging, vertical, handlers, cycleEdge } =
-    useToolbarDock('left');
+    useToolbarDock(defaultDock, defaultDock);
   const [openPanel, setOpenPanel] = useState(null);
 
   const closePanel = useCallback(() => setOpenPanel(null), []);

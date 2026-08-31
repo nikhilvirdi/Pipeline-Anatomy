@@ -37,21 +37,15 @@ function nearestEdge(pos, size) {
  * Position is always driven through left/top pixel values (never a mix of
  * left/right/transform) so a dock change animates as a single smooth move
  * between two coordinates, per the 200ms snap in THEME_TOKENS.md.
- *
- * freeDrag (TEMP: mobile layout fix only — does not affect desktop):
- * When true, skip edge-snapping on release so the toolbar stays wherever
- * it was dropped. Used to manually place the toolbar at mobile viewport.
  */
-export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDrag = false) {
+export function useToolbarDock(initialEdge = 'left') {
   const ref = useRef(null);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
 
-  const [edge, setEdge] = useState(autoDockEdge ?? initialEdge);
+  const [edge, setEdge] = useState(initialEdge);
   const [position, setPosition] = useState(null);
   const [dragging, setDragging] = useState(false);
-  // Bumped on every drag release so the docking effect below always re-runs,
-  // even when the release doesn't change `edge` or net-change `dragging`.
   const [snapTick, setSnapTick] = useState(0);
 
   const positionRef = useRef(null);
@@ -60,8 +54,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
     setPosition(next);
   }, []);
 
-  // offsetWidth/Height, not getBoundingClientRect: layout values are unaffected
-  // by the left/top transition, so they stay truthful mid-animation.
   const measure = useCallback(() => {
     const el = ref.current;
     if (!el) return { width: 48, height: 48 };
@@ -86,9 +78,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
     }
   }, []);
 
-  // Re-snap on mount, on dock change, when a drag ends, and on window resize.
-  // Layout effect (not ResizeObserver) so the measured position lands in the
-  // same paint as the orientation change — no flash at a stale position.
   useLayoutEffect(() => {
     if (dragging) return undefined;
 
@@ -114,7 +103,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
         target: event.currentTarget,
       };
 
-      // Keep the press off the canvas so it can't start a pan.
       event.stopPropagation();
     },
     [dockedPosition, edge, measure]
@@ -154,31 +142,18 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
     if (!drag) return;
     dragRef.current = null;
 
-    // Under the threshold: this was a tap, let the button click through.
     if (!drag.moved) return;
 
-    // Swallow the click that follows a drag release.
     suppressClickRef.current = true;
     window.setTimeout(() => {
       suppressClickRef.current = false;
     }, 0);
 
-    // TEMP: mobile layout fix only — freeDrag skips edge-snap so the toolbar
-    // stays exactly where it was dropped. freeDrag=false (desktop default) is
-    // completely unaffected.
-    if (freeDrag) {
-      setDragging(false);
-      setSnapTick((tick) => tick + 1);
-      return;
-    }
-
-    // Snap from where the pill was dropped, not from its rect — the rect can
-    // still be animating from the previous dock and would pick that edge again.
     const dropped = positionRef.current;
     if (dropped) setEdge(nearestEdge(dropped, measure()));
     setDragging(false);
     setSnapTick((tick) => tick + 1);
-  }, [freeDrag, measure]);
+  }, [measure]);
 
   const onPointerUp = useCallback(
     (event) => {
@@ -196,17 +171,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
     event.stopPropagation();
   }, []);
 
-  // Auto-dock on breakpoint changes (UI_SPEC.md: the toolbar docks to the top
-  // on small screens). Deliberately keyed off a *change* in `autoDockEdge`
-  // rather than its value, so a user who re-docks by hand afterwards keeps
-  // their choice until the breakpoint actually crosses again.
-  const previousAutoDock = useRef(autoDockEdge);
-  useEffect(() => {
-    if (autoDockEdge === previousAutoDock.current) return;
-    previousAutoDock.current = autoDockEdge;
-    setEdge(autoDockEdge ?? initialEdge);
-  }, [autoDockEdge, initialEdge]);
-
   const cycleEdge = useCallback(() => {
     setEdge((prev) => {
       const next = (DOCK_EDGES.indexOf(prev) + 1) % DOCK_EDGES.length;
@@ -218,9 +182,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
     ref,
     edge,
     position,
-    // TEMP: mobile layout fix only — positionRef lets the export capture live
-    // toolbar coordinates without subscribing to position state updates.
-    positionRef,
     dragging,
     vertical: isVerticalEdge(edge),
     cycleEdge,
@@ -229,8 +190,6 @@ export function useToolbarDock(initialEdge = 'left', autoDockEdge = null, freeDr
       onPointerDown,
       onPointerMove,
       onPointerUp,
-      // Safety net: if capture is lost (pointercancel, window blur), settle
-      // the toolbar on an edge instead of leaving it stranded mid-canvas.
       onLostPointerCapture: endDrag,
       onClickCapture,
     },

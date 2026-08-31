@@ -100,7 +100,7 @@ export default function CurvedEdge({
     const midPoint = data.waypoints[Math.floor(data.waypoints.length / 2)];
     labelX = midPoint ? midPoint.x : (sourceX + targetX) / 2;
     labelY = midPoint ? midPoint.y - 12 : (sourceY + targetY) / 2;
-  } else if (data?.orientation !== 'vertical' && isLoopback) {
+  } else if (isLoopback) {
     if (id.includes('developer-fixes-ci') && id.includes('commit-push-code')) {
       const marginY = -140;
       edgePath = `M ${sourceX} ${sourceY} V ${marginY} H ${targetX} V ${targetY}`;

@@ -27,21 +27,23 @@ function setNodeParam(nodeId) {
  * @param {Set<string>} validNodeIds    set of all real node ids in the diagram
  * @returns {{ startupNodeId: string|null }}
  */
-export function useNodeUrl(focusedNodeId, validNodeIds) {
+export function useNodeUrl(focusedNodeId, validNodeIds = new Set()) {
+  const safeIds = validNodeIds instanceof Set ? validNodeIds : new Set();
+
   // Capture the ?node= param that was present when the page first loaded.
   // We only want to read it once — useRef keeps it stable across re-renders.
   const startupNodeIdRef = useRef(() => {
     const raw = getNodeParam();
     // Validate immediately: if the id doesn't exist in the diagram, ignore it.
-    if (raw && validNodeIds.size > 0 && validNodeIds.has(raw)) return raw;
+    if (raw && safeIds.size > 0 && safeIds.has(raw)) return raw;
     return null;
   });
 
   // Evaluate the ref-stored initialiser once.
   const startupNodeId = useRef(null);
-  if (startupNodeId.current === null && validNodeIds.size > 0) {
+  if (startupNodeId.current === null && safeIds.size > 0) {
     const raw = getNodeParam();
-    startupNodeId.current = raw && validNodeIds.has(raw) ? raw : '__resolved__';
+    startupNodeId.current = raw && safeIds.has(raw) ? raw : '__resolved__';
   }
 
   // Keep the URL in sync whenever focusedNodeId changes.

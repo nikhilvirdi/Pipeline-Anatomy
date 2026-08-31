@@ -2,12 +2,10 @@ import React from 'react';
 import { Handle } from '@xyflow/react';
 
 import { useNodeHighlight } from '../../context/DiagramInteractionContext';
-import { getHandlePositions } from '../../utils/handlePositions';
 
 export default function TerminalNode({ id, data }) {
-  const { label, icons, orientation } = data;
+  const { label, icons } = data;
   const { dimClass, accentClass } = useNodeHighlight(id);
-  const handles = getHandlePositions(orientation);
 
   const getHandleClass = (handleId) => {
     const isUsed = data?.usedHandles?.[handleId];

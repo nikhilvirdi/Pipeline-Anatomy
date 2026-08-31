@@ -10,8 +10,6 @@ import {
 } from '@xyflow/react';
 import { toPng, toSvg } from 'html-to-image';
 
-
-
 import '@xyflow/react/dist/style.css';
 
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -51,13 +49,12 @@ const edgeTypes = {
   curved: CurvedEdge,
 };
 
-// Fixed default viewport matching Phase 01 framing with breathing room
+// Default landing viewport matching Phase 01 framing with breathing room
 const DEFAULT_VIEWPORT = { x: 150, y: 200, zoom: 0.78 };
-const VERTICAL_DEFAULT_VIEWPORT = { x: 60, y: 80, zoom: 0.75 };
+// On narrow/mobile viewports, start slightly zoomed out so Phase 01 is immediately readable
+const MOBILE_DEFAULT_VIEWPORT = { x: 40, y: 150, zoom: 0.52 };
 
-
-
-const FIT_VIEW_OPTIONS = { padding: 0.1, minZoom: 0.5 };
+const FIT_VIEW_OPTIONS = { padding: 0.1, minZoom: 0.2 };
 // Zoom transition: 300–400ms ease-out per THEME_TOKENS.md
 const TRANSITION_MS = 350;
 // Focusing one node: maxZoom is what stops fitView from zooming to a wall of
@@ -66,24 +63,17 @@ const FOCUS_VIEW_OPTIONS = { padding: 0.2, minZoom: 0.4, maxZoom: 1.5 };
 
 function DiagramCanvas() {
   const { theme } = useTheme();
-  const { fitView, setViewport, getNodes, getEdges } = useReactFlow();
+  const { fitView, setViewport, getNodes } = useReactFlow();
   const canvasRef = useRef(null);
-
-  // TEMP: mobile layout fix only — stores the toolbar's live positionRef
-  // forwarded up from Toolbar via onPositionRef. Only populated on mobile.
-  // Does not affect desktop. Remove after layout finalized.
-  const toolbarPosRef = useRef(null);
-  const handleToolbarPositionRef = useCallback((ref) => {
-    toolbarPosRef.current = ref;
-  }, []);
 
   const isSmallScreen = useMediaQuery(SMALL_SCREEN_QUERY);
   const isTouch = useMediaQuery(TOUCH_QUERY);
-  const orientation = isSmallScreen ? 'vertical' : 'horizontal';
+
+  const initialViewport = isSmallScreen ? MOBILE_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
 
   const base = useMemo(
-    () => getTransformedDiagramData(theme, orientation),
-    [orientation, theme]
+    () => getTransformedDiagramData(theme),
+    [theme]
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(base.nodes);
@@ -96,8 +86,6 @@ function DiagramCanvas() {
   const [hiddenPhases, setHiddenPhases] = useState(() => new Set());
   const [toastMessage, setToastMessage] = useState(null);
   const toastTimeoutRef = useRef(null);
-
-
 
   const hiddenNodeIds = useMemo(() => {
     const hidden = new Set();
@@ -120,12 +108,8 @@ function DiagramCanvas() {
   );
 
   // Theme-dependent data (icons, palette) and phase visibility are merged into
-  // the live nodes rather than replacing them, so positions from Phase 5's
-  // drag interaction survive a theme toggle or a phase filter change.
-  //
-  // Both effects return the previous array untouched when nothing differs, so
-  // a mount or an unrelated re-render doesn't hand React Flow a fresh array and
-  // make it re-adopt and re-measure all 46 nodes for no reason.
+  // the live nodes rather than replacing them, so positions from user drag
+  // interaction survive a theme toggle or a phase filter change.
   useEffect(() => {
     setNodes((current) => {
       let changed = false;
@@ -137,9 +121,7 @@ function DiagramCanvas() {
           source &&
           (source.data.theme !== node.data.theme ||
             source.data.icons !== node.data.icons);
-        const staleLayout =
-          source && source.data.orientation !== node.data.orientation;
-        if (!staleTheme && !staleLayout && Boolean(node.hidden) === hidden) {
+        if (!staleTheme && Boolean(node.hidden) === hidden) {
           return node;
         }
 
@@ -147,26 +129,17 @@ function DiagramCanvas() {
         return {
           ...node,
           hidden,
-          // Switching layout direction re-lays out the diagram, so dragged
-          // positions are intentionally replaced here; a theme change or a
-          // phase filter must leave them alone.
-          ...(staleLayout
-            ? {
-                position: source.position,
-                sourcePosition: source.sourcePosition,
-                targetPosition: source.targetPosition,
-              }
-            : null),
-          data:
-            staleTheme || staleLayout
-              ? { ...node.data, ...source.data }
-              : node.data,
+          data: {
+            ...node.data,
+            theme,
+            icons: source?.data.icons ?? node.data.icons,
+          },
         };
       });
 
       return changed ? next : current;
     });
-  }, [baseNodeById, hiddenNodeIds, setNodes]);
+  }, [baseNodeById, hiddenNodeIds, setNodes, theme]);
 
   useEffect(() => {
     setEdges((current) => {
@@ -174,26 +147,29 @@ function DiagramCanvas() {
 
       const next = current.map((edge) => {
         const source = baseEdgeById.get(edge.id);
-        // An edge with either endpoint filtered out has nothing to connect.
         const hidden =
           hiddenNodeIds.has(edge.source) || hiddenNodeIds.has(edge.target);
-        const staleData = source && source.data.theme !== edge.data?.theme;
-        if (!staleData && Boolean(edge.hidden) === hidden) return edge;
+        const staleTheme = source && source.data.theme !== edge.data.theme;
+        if (!staleTheme && Boolean(edge.hidden) === hidden) {
+          return edge;
+        }
 
         changed = true;
         return {
           ...edge,
           hidden,
-          data: staleData ? { ...edge.data, ...source.data } : edge.data,
+          data: {
+            ...edge.data,
+            theme,
+          },
         };
       });
 
       return changed ? next : current;
     });
-  }, [baseEdgeById, hiddenNodeIds, setEdges]);
+  }, [baseEdgeById, hiddenNodeIds, setEdges, theme]);
 
-  // Filtering away the current selection would otherwise leave the whole
-  // diagram dimmed against a node nobody can see.
+  // Clean dismiss when a hovered/focused node gets hidden
   useEffect(() => {
     setFocusedNodeId((id) => (id && hiddenNodeIds.has(id) ? null : id));
     setKeyboardNodeId((id) => (id && hiddenNodeIds.has(id) ? null : id));
@@ -202,28 +178,6 @@ function DiagramCanvas() {
       current && hiddenNodeIds.has(current.id) ? null : current
     );
   }, [hiddenNodeIds]);
-
-  // Re-fit after a layout-direction switch: the previous viewport was framing a
-  // diagram that is now 6120 units wide instead of ~1310, or the reverse.
-  const previousOrientation = useRef(orientation);
-  useEffect(() => {
-    if (previousOrientation.current === orientation) return undefined;
-    previousOrientation.current = orientation;
-
-    setFocusedNodeId(null);
-    setKeyboardNodeId(null);
-    setHoveredNodeId(null);
-    setTooltip(null);
-
-
-    // One tick, so the new positions are in the store before it measures them.
-    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
-    const timer = window.setTimeout(
-      () => setViewport(target, { duration: TRANSITION_MS }),
-      60
-    );
-    return () => window.clearTimeout(timer);
-  }, [isSmallScreen, orientation, setViewport]);
 
   const interaction = useMemo(
     () => ({
@@ -238,64 +192,13 @@ function DiagramCanvas() {
     [nodes, tooltip]
   );
 
-  /* ---------------------------------------------------------------- focus */
-
-  const centreOnNode = useCallback(
-    (nodeId) => {
-      fitView({ ...FOCUS_VIEW_OPTIONS, duration: TRANSITION_MS, nodes: [{ id: nodeId }] });
-    },
-    [fitView]
-  );
-
-  const focusNode = useCallback(
-    (nodeId) => {
-      if (!nodeId || hiddenNodeIds.has(nodeId)) return;
-      setFocusedNodeId(nodeId);
-      centreOnNode(nodeId);
-    },
-    [centreOnNode, hiddenNodeIds]
-  );
-
   const clearFocus = useCallback(() => {
     setFocusedNodeId(null);
     setKeyboardNodeId(null);
-    setTooltip(null);
   }, []);
 
-  /* ------------------------------------------------------------ URL sync */
+  /* ------------------------------------------------------------- pointers */
 
-  // Set of all valid node ids — used to validate the ?node= startup param.
-  const validNodeIds = useMemo(
-    () => new Set(base.nodes.map((n) => n.id)),
-    [base.nodes]
-  );
-
-  // Syncs focusedNodeId <-> ?node= query param via history.pushState.
-  const { startupNodeId } = useNodeUrl(focusedNodeId, validNodeIds);
-
-  // On first render, if a valid ?node= param was present, focus that node.
-  const startupAppliedRef = useRef(false);
-  useEffect(() => {
-    if (startupAppliedRef.current) return;
-    if (!startupNodeId) {
-      startupAppliedRef.current = true;
-      return;
-    }
-    // Nodes are not measured until after the first layout pass, so we wait
-    // one animation frame before calling fitView on the specific node.
-    const id = window.requestAnimationFrame(() => {
-      startupAppliedRef.current = true;
-      focusNode(startupNodeId);
-    });
-    return () => window.cancelAnimationFrame(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startupNodeId]);
-
-  /* -------------------------------------------------------- pointer input */
-
-  // Touch devices emulate mouseover/mouseleave on tap, which would fight the
-  // tap handling below — so on a coarse pointer these stay switched off and
-  // `handleNodeClick` does all the work.
   const handleNodeMouseEnter = useCallback(
     (event, node) => {
       if (isTouch) return;
@@ -321,110 +224,216 @@ function DiagramCanvas() {
     setTooltip(null);
   }, [isTouch]);
 
-  // React Flow fires the click after a drag finishes. `nodeClickDistance` gives
-  // touch taps room for finger jitter, but that same tolerance means a small
-  // *mouse* drag lands inside it — so the node would move and click-to-focus
-  // would zoom the canvas at the same time, which reads as dragging being
-  // broken. A real drag always sets this first, so the click can be dropped.
-  const draggedRef = useRef(false);
-
-  const handleNodeDragStart = useCallback(() => {
-    draggedRef.current = true;
-  }, []);
-
   const handleNodeClick = useCallback(
     (event, node) => {
-      if (draggedRef.current) {
-        draggedRef.current = false;
-        return;
-      }
+      event.stopPropagation();
 
-      setTooltip({ id: node.id, x: event.clientX, y: event.clientY });
-      setKeyboardNodeId(null);
-      canvasRef.current?.focus();
-
-      // On touch there is no hover, so a tap has to stand in for it —
-      // EDGE_RULES.md asks for the full upstream/downstream chain on tap.
-      // Without this, path highlighting would be desktop-only.
-      if (isTouch) setHoveredNodeId(node.id);
-
-      // Clicking the already-focused node releases the focus rather than
-      // leaving the user with no way back other than the reset button.
       if (focusedNodeId === node.id) {
-        setFocusedNodeId(null);
-        // On desktop the pointer is still over the node, so the tooltip stays
-        // by hover. On touch nothing would re-show it, and leaving it up with
-        // no highlight behind it reads as a stuck popup.
-        if (isTouch) {
-          setHoveredNodeId(null);
-          setTooltip(null);
-        }
+        clearFocus();
+        if (isTouch) setTooltip(null);
         return;
       }
-      focusNode(node.id);
+
+      setFocusedNodeId(node.id);
+      setKeyboardNodeId(node.id);
+      if (isTouch) {
+        setTooltip({ id: node.id, x: event.clientX, y: event.clientY });
+      }
     },
-    [focusNode, focusedNodeId, isTouch]
+    [clearFocus, focusedNodeId, isTouch]
   );
 
-  // Clearing focus also removes the ?node= param (handled inside useNodeUrl).
-  // We re-use the existing clearFocus; URL cleanup is automatic via the effect.
-
-  // Tap/click anywhere off a node dismisses the tooltip and the highlight.
   const handlePaneClick = useCallback(() => {
-    draggedRef.current = false;
     clearFocus();
     setHoveredNodeId(null);
-    canvasRef.current?.focus();
+    setTooltip(null);
   }, [clearFocus]);
 
-  /* ------------------------------------------------------- keyboard input */
+  const handleNodeDragStart = useCallback(() => {
+    setTooltip(null);
+  }, []);
 
-  const handleKeyboardNavigate = useCallback(
+  /* ------------------------------------------------------------- keyboard */
+
+  const handleKeyboardSelect = useCallback(
     (nodeId) => {
+      if (!nodeId) {
+        clearFocus();
+        return;
+      }
       setKeyboardNodeId(nodeId);
-      setTooltip(null);
-      focusNode(nodeId);
+      setFocusedNodeId(nodeId);
+
+      const target = nodes.find((n) => n.id === nodeId);
+      if (target) {
+        fitView({
+          nodes: [target],
+          duration: TRANSITION_MS,
+          ...FOCUS_VIEW_OPTIONS,
+        });
+      }
     },
-    [focusNode]
+    [clearFocus, fitView, nodes]
   );
 
-  // Keyboard focus centres the node, so anchoring the tooltip just off the
-  // canvas centre lands it beside whatever the user just navigated to.
-  const handleKeyboardActivate = useCallback((nodeId) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+  const handleKeyboardOpenCard = useCallback((nodeId) => {
+    if (!nodeId) return;
     setTooltip({
       id: nodeId,
-      x: rect.left + rect.width / 2 + 70,
-      y: rect.top + rect.height / 2 + 30,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
     });
   }, []);
 
+  const handleKeyboardCloseCard = useCallback(() => {
+    setTooltip(null);
+  }, []);
+
   const handleKeyDown = useKeyboardNav({
-    activeNodeId: keyboardNodeId || focusedNodeId,
-    isVisible,
-    getNodes,
-    onNavigate: handleKeyboardNavigate,
-    onActivate: handleKeyboardActivate,
-    onClear: clearFocus,
+    keyboardNodeId,
+    nodes,
+    edges,
+    onSelectNode: handleKeyboardSelect,
+    onOpenCard: handleKeyboardOpenCard,
+    onCloseCard: handleKeyboardCloseCard,
+    onClearFocus: clearFocus,
   });
 
-  // Focus the canvas on load so arrow-key navigation works without a click.
+  /* ---------------------------------------------------------- deep-linking */
+
+  const jumpToNode = useCallback(
+    (nodeId, { openCard = false } = {}) => {
+      const target = nodes.find((n) => n.id === nodeId);
+      if (!target) return;
+
+      if (hiddenPhases.has(target.data.phase)) {
+        setHiddenPhases((current) => {
+          const next = new Set(current);
+          next.delete(target.data.phase);
+          return next;
+        });
+      }
+
+      setFocusedNodeId(nodeId);
+      setKeyboardNodeId(nodeId);
+
+      fitView({
+        nodes: [target],
+        duration: TRANSITION_MS,
+        ...FOCUS_VIEW_OPTIONS,
+      });
+
+      if (openCard) {
+        setTooltip({
+          id: nodeId,
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        });
+      }
+    },
+    [fitView, hiddenPhases, nodes]
+  );
+
+  const validNodeIds = useMemo(
+    () => new Set(base.nodes.map((n) => n.id)),
+    [base.nodes]
+  );
+  const { startupNodeId } = useNodeUrl(focusedNodeId, validNodeIds);
+
+  const startupHandledRef = useRef(false);
   useEffect(() => {
-    canvasRef.current?.focus({ preventScroll: true });
-  }, []);
+    if (!startupNodeId || startupHandledRef.current) return;
+    startupHandledRef.current = true;
+    jumpToNode(startupNodeId, { openCard: true });
+  }, [jumpToNode, startupNodeId]);
+
+  /* --------------------------------------------------- search & filtering */
+
+  const phaseCounts = useMemo(() => {
+    const counts = {};
+    for (const node of base.nodes) {
+      const p = node.data.phase;
+      counts[p] = (counts[p] || 0) + 1;
+    }
+    return counts;
+  }, [base.nodes]);
+
+  const searchNodes = useMemo(
+    () =>
+      base.nodes.map((node) => ({
+        id: node.id,
+        label: node.data.label,
+        phase: node.data.phase,
+        icons: node.data.icons,
+      })),
+    [base.nodes]
+  );
+
+  const handleJumpToNode = useCallback(
+    (nodeId) => {
+      jumpToNode(nodeId, { openCard: true });
+    },
+    [jumpToNode]
+  );
+
+  /* -------------------------------------------------------------- exports */
+
+  const handleExportDiagram = useCallback(
+    async (format = 'png') => {
+      const el = canvasRef.current?.querySelector('.react-flow__viewport');
+      if (!el) return;
+
+      const activeNodes = nodes.filter((n) => !hiddenNodeIds.has(n.id));
+      if (activeNodes.length === 0) return;
+
+      const bounds = getNodesBounds(activeNodes);
+      const padding = 60;
+      const exportWidth = bounds.width + padding * 2;
+      const exportHeight = bounds.height + padding * 2;
+
+      const isLight = theme === 'light';
+      const backgroundColor = isLight ? '#ffffff' : '#000000';
+
+      const options = {
+        backgroundColor,
+        width: exportWidth,
+        height: exportHeight,
+        style: {
+          width: `${exportWidth}px`,
+          height: `${exportHeight}px`,
+          transform: `translate(${-(bounds.x - padding)}px, ${-(bounds.y - padding)}px) scale(1)`,
+        },
+        pixelRatio: 2,
+      };
+
+      try {
+        const dataUrl =
+          format === 'svg' ? await toSvg(el, options) : await toPng(el, options);
+
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `pipeline-anatomy-${theme}.${format}`;
+        a.click();
+      } catch (err) {
+        console.error('Export failed', err);
+      }
+    },
+    [hiddenNodeIds, nodes, theme]
+  );
+
+  const handleExportPng = useCallback(() => handleExportDiagram('png'), [handleExportDiagram]);
+  const handleExportSvg = useCallback(() => handleExportDiagram('svg'), [handleExportDiagram]);
 
   /* -------------------------------------------------------------- toolbar */
 
   const handleResetView = useCallback(() => {
     clearFocus();
     setHoveredNodeId(null);
-    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
-    setViewport(target, { duration: TRANSITION_MS });
-  }, [clearFocus, orientation, setViewport]);
+    setViewport(initialViewport, { duration: TRANSITION_MS });
+  }, [clearFocus, initialViewport, setViewport]);
 
   const handleResetLayout = useCallback(() => {
-    // Reset all node positions back to original baked layout
+    // Reset all node positions back to original authored layout
     setNodes((current) =>
       current.map((node) => {
         const source = baseNodeById.get(node.id);
@@ -439,17 +448,14 @@ function DiagramCanvas() {
     // Reset viewport back to default landing view
     clearFocus();
     setHoveredNodeId(null);
-    const target = orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT;
-    setViewport(target, { duration: TRANSITION_MS });
+    setViewport(initialViewport, { duration: TRANSITION_MS });
 
-    // Brief confirmation toast
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setToastMessage('Layout reset to default');
     toastTimeoutRef.current = setTimeout(() => {
       setToastMessage(null);
     }, 2000);
-  }, [baseNodeById, clearFocus, orientation, setNodes, setViewport]);
-
+  }, [baseNodeById, clearFocus, initialViewport, setNodes, setViewport]);
 
   const handleTogglePhase = useCallback((phaseId) => {
     setHiddenPhases((current) => {
@@ -460,153 +466,9 @@ function DiagramCanvas() {
     });
   }, []);
 
-  const handleShowAllPhases = useCallback(() => setHiddenPhases(new Set()), []);
-
-  const phaseCounts = useMemo(() => {
-    const counts = {};
-    for (const node of base.nodes) {
-      counts[node.data.phase] = (counts[node.data.phase] || 0) + 1;
-    }
-    return counts;
-  }, [base.nodes]);
-
-  // Search only ever sees what the phase filter leaves on the canvas.
-  const searchNodes = useMemo(
-    () =>
-      base.nodes
-        .filter((node) => !hiddenNodeIds.has(node.id))
-        .map((node) => ({
-          id: node.id,
-          label: node.data.label,
-          phase: node.data.phase,
-        })),
-    [base.nodes, hiddenNodeIds]
-  );
-
-  const handleJumpToNode = useCallback(
-    (nodeId) => {
-      setKeyboardNodeId(null);
-      focusNode(nodeId);
-      canvasRef.current?.focus();
-    },
-    [focusNode]
-  );
-
-  const handleExportDiagram = useCallback((format = 'png') => {
-    const activeNodes = getNodes();
-    if (!activeNodes || activeNodes.length === 0) return;
-
-    const nodesBounds = getNodesBounds(activeNodes);
-    const padding = 80;
-    const imageWidth = Math.ceil(nodesBounds.width + padding * 2);
-    const imageHeight = Math.ceil(nodesBounds.height + padding * 2);
-
-    const viewportElement = document.querySelector('.react-flow__viewport');
-    if (!viewportElement) return;
-
-    const isLightMode = theme === 'light';
-    const bgColor = isLightMode ? '#ffffff' : '#000000';
-    const exportFn = format === 'svg' ? toSvg : toPng;
-    const filename = `pipeline-anatomy-export.${format}`;
-
-    exportFn(viewportElement, {
-      backgroundColor: bgColor,
-      width: imageWidth,
-      height: imageHeight,
-      style: {
-        width: `${imageWidth}px`,
-        height: `${imageHeight}px`,
-        transform: `translate(${-(nodesBounds.x - padding)}px, ${-(nodesBounds.y - padding)}px) scale(1)`,
-      },
-    })
-      .then((dataUrl) => {
-        let finalDataUrl = dataUrl;
-
-        if (format === 'svg') {
-          // toCanvas (used by toPng) fillRects the background before drawing;
-          // toSvg has no equivalent, so a bg <rect> must be inserted manually.
-          const svgMarkup = decodeURIComponent(dataUrl.substring(dataUrl.indexOf(',') + 1));
-          const svgRoot = new DOMParser().parseFromString(svgMarkup, 'image/svg+xml').documentElement;
-          const bgRect = svgRoot.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          bgRect.setAttribute('x', '0');
-          bgRect.setAttribute('y', '0');
-          bgRect.setAttribute('width', `${imageWidth}`);
-          bgRect.setAttribute('height', `${imageHeight}`);
-          bgRect.setAttribute('fill', bgColor);
-          svgRoot.insertBefore(bgRect, svgRoot.firstChild);
-          finalDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svgRoot))}`;
-        }
-
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = finalDataUrl;
-        link.click();
-      })
-      .catch((err) => {
-        console.error(`Failed to export diagram as ${format.toUpperCase()}:`, err);
-      });
-  }, [getNodes, theme]);
-
-  const handleExportPng = useCallback(() => handleExportDiagram('png'), [handleExportDiagram]);
-  const handleExportSvg = useCallback(() => handleExportDiagram('svg'), [handleExportDiagram]);
-
-  // ============================================================================
-  // TEMP: mobile layout fix only — does not affect desktop.
-  // Dev-only export for mobile layout positioning.
-  // Triggered via Ctrl+Shift+M or on-screen button (mobile viewport only).
-  // Captures node positions, edge handles, and toolbar screen coordinates,
-  // then downloads as mobile-layout-export.json for permanent bake-in.
-  // Remove after layout finalized.
-  // ============================================================================
-  const exportMobileLayout = useCallback(() => {
-    if (!isSmallScreen) return; // strict mobile-only guard
-    const currentNodes = getNodes();
-    const currentEdges = getEdges();
-    const toolbarPos = toolbarPosRef.current?.current ?? null;
-
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      viewport: 'mobile-vertical',
-      toolbar: toolbarPos ? { x: Math.round(toolbarPos.x), y: Math.round(toolbarPos.y) } : null,
-      nodes: currentNodes.map((n) => ({
-        id: n.id,
-        label: n.data?.label || '',
-        position: {
-          x: Math.round(n.position.x),
-          y: Math.round(n.position.y),
-        },
-      })),
-      edges: currentEdges.map((e) => ({
-        id: e.id,
-        from: e.source,
-        to: e.target,
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
-        waypoints: e.data?.waypoints || undefined,
-      })),
-    };
-
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'mobile-layout-export.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    console.log('[TEMP] Mobile layout exported:', payload);
-  }, [isSmallScreen, getNodes, getEdges]);
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return undefined;
-    const handleDevKey = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
-        e.preventDefault();
-        exportMobileLayout();
-      }
-    };
-    window.addEventListener('keydown', handleDevKey);
-    return () => window.removeEventListener('keydown', handleDevKey);
-  }, [exportMobileLayout]);
+  const handleShowAllPhases = useCallback(() => {
+    setHiddenPhases(new Set());
+  }, []);
 
   /* --------------------------------------------------------------- render */
 
@@ -619,15 +481,7 @@ function DiagramCanvas() {
   return (
     <div className="w-screen h-screen relative bg-canvas">
       {/* Floating Tooltip Popup. On small screens it sits at the bottom of the
-
-
-
-
-
-
-          viewport instead of chasing the pointer — a 320px card offset from a
-          tap point has nowhere to go on a 375px-wide screen, and anchoring it
-          keeps it clear of the finger that opened it. */}
+          viewport instead of chasing the pointer. */}
       {tooltipNode && (
         <div
           className={
@@ -648,7 +502,7 @@ function DiagramCanvas() {
         </div>
       )}
 
-      {/* Focused-node action bar: copy-link, only visible in click-focus state */}
+      {/* Focused-node action bar */}
       {focusedNodeId && (
         <FocusedNodeBar
           label={focusedLabel}
@@ -656,7 +510,7 @@ function DiagramCanvas() {
         />
       )}
 
-      {/* Toast confirmation for layout reset / actions */}
+      {/* Toast confirmation for layout reset */}
       {toastMessage && (
         <div
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-3.5 py-1.5 rounded-full text-xs font-sans font-medium border shadow-lg backdrop-blur-md transition-all select-none pointer-events-none ${
@@ -669,7 +523,7 @@ function DiagramCanvas() {
         </div>
       )}
 
-      {/* Floating Toolbar (Phase 6) */}
+      {/* Floating Toolbar */}
       <Toolbar
         onResetView={handleResetView}
         onResetLayout={handleResetLayout}
@@ -682,26 +536,7 @@ function DiagramCanvas() {
         onShowAllPhases={handleShowAllPhases}
         searchNodes={searchNodes}
         onJumpToNode={handleJumpToNode}
-        isSmallScreen={isSmallScreen}
-        onPositionRef={handleToolbarPositionRef}
       />
-
-      {/* TEMP: mobile layout fix only — dev-only export button, mobile viewport
-           only. Not wired into production build (guarded by import.meta.env.DEV
-           and isSmallScreen). Remove after layout finalized. */}
-      {import.meta.env.DEV && isSmallScreen && (
-        <button
-          type="button"
-          onClick={exportMobileLayout}
-          className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-500 text-white font-mono text-xs font-semibold shadow-lg active:scale-95 transition-all cursor-pointer select-none"
-          title="Export mobile node positions and toolbar coords as mobile-layout-export.json (Ctrl+Shift+M)"
-        >
-          📱 Export Mobile Layout (Ctrl+Shift+M)
-        </button>
-      )}
-
-
-
 
       {/* Announces keyboard navigation for screen readers */}
       <div className="sr-only" aria-live="polite">
@@ -709,7 +544,6 @@ function DiagramCanvas() {
       </div>
 
       <div
-
         ref={canvasRef}
         tabIndex={0}
         role="application"
@@ -726,20 +560,19 @@ function DiagramCanvas() {
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            defaultViewport={orientation === 'vertical' ? VERTICAL_DEFAULT_VIEWPORT : DEFAULT_VIEWPORT}
+            defaultViewport={initialViewport}
             minZoom={0.1}
             maxZoom={2}
             nodesDraggable={true}
+            panOnDrag={true}
+            zoomOnPinch={true}
+            panOnScroll={false}
+            zoomOnScroll={true}
             edgesReconnectable={false}
             edgesFocusable={false}
             connectOnClick={false}
             deleteKeyCode={null}
-            // A finger never taps perfectly still. With the default of 0 any
-            // jitter cancels the click and the tooltip never opens; 8px is well
-            // under what an intentional node drag covers.
             nodeClickDistance={8}
-            // React Flow's built-in arrow keys move the selected node; Phase 7
-            // uses them to move between nodes instead (useKeyboardNav).
             disableKeyboardA11y
             onNodeMouseEnter={handleNodeMouseEnter}
             onNodeMouseMove={handleNodeMouseMove}
@@ -748,14 +581,13 @@ function DiagramCanvas() {
             onNodeClick={handleNodeClick}
             onPaneClick={handlePaneClick}
           >
-            <PhaseDividers theme={theme} orientation={orientation} />
+            <PhaseDividers theme={theme} />
             <DepthOfField containerRef={canvasRef} />
             <EdgeMarkers />
             <Controls className={isLight ? 'rf-controls-light' : 'rf-controls-dark'} />
           </ReactFlow>
         </DiagramInteractionProvider>
       </div>
-
     </div>
   );
 }

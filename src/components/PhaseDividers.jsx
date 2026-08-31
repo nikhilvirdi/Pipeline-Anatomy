@@ -4,12 +4,8 @@ import { useViewport } from '@xyflow/react';
 // X-coordinates for the 3 phase transition boundaries in clear gap space
 const DIVIDER_X_POSITIONS = [2190, 4110, 5900];
 
-
-
-export default function PhaseDividers({ theme, orientation }) {
+export default function PhaseDividers({ theme }) {
   const { x, y, zoom } = useViewport();
-
-  if (orientation === 'vertical') return null;
 
   const strokeColor =
     theme === 'light' ? '#d0d0d0' : '#3a3a3a';

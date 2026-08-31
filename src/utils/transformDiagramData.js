@@ -4,7 +4,6 @@ import diagramData from '../../diagram/diagram-data.json';
 import nodeCards from '../../node-cards.json';
 import phaseCards from '../../phase-cards.json';
 import { getNodeIcons } from './iconMap';
-import { getVerticalPositions } from './verticalLayout';
 
 const DECISION_NODE_IDS = new Set([
   'fail',
@@ -24,15 +23,10 @@ export function edgeId(from, to) {
 }
 
 /**
- * `horizontal` is the authored desktop layout; `vertical` is the top-to-bottom
- * layout small screens switch to (see `verticalLayout.js`).
+ * Transforms diagram data into React Flow nodes and edges using the
+ * authored horizontal left-to-right layout.
  */
-export function getTransformedDiagramData(theme = 'dark', orientation = 'horizontal') {
-  const isVertical = orientation === 'vertical';
-  const verticalLayout = isVertical ? getVerticalPositions() : null;
-  const verticalPositions = verticalLayout?.positions;
-  const phaseStartY = verticalLayout?.phaseStartY;
-
+export function getTransformedDiagramData(theme = 'dark') {
   const nodes = diagramData.nodes.map((node) => {
     let type = 'rect';
     if (DECISION_NODE_IDS.has(node.id) || node.shape === 'decision') {
@@ -45,8 +39,6 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
 
     const icons = getNodeIcons(node.id, theme);
 
-    // Handle sides must match these, or edges detach from the dots they point
-    // at — the node components read `data.orientation` to stay in sync.
     const isLoopbackNode =
       node.id === 'pipeline-stops-ci' ||
       node.id === 'developer-fixes-ci' ||
@@ -59,10 +51,9 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     return {
       id: node.id,
       type,
-      position:
-        (isVertical && verticalPositions.get(node.id)) || { x: node.x, y: node.y },
-      sourcePosition: isVertical ? Position.Bottom : Position.Right,
-      targetPosition: isVertical ? Position.Top : Position.Left,
+      position: { x: node.x, y: node.y },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
       data: {
         label: node.label,
         phase: node.phase,
@@ -71,7 +62,7 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         note: node.note,
         icons,
         theme,
-        orientation,
+        orientation: 'horizontal',
         isLoopback: isLoopbackNode,
         cardText: nodeCards[node.id] || '',
       },
@@ -90,19 +81,15 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     return {
       id: `header-${phase.id}`,
       type: 'phaseHeader',
-      position: isVertical
-        ? { x: -100, y: (phaseStartY.get(phase.id) ?? idx * 900) - 80 }
-        : { x: def.x, y: def.y },
+      position: { x: def.x, y: def.y },
       selectable: false,
-      // TEMP: mobile layout fix only — draggable on vertical so headers can be
-      // repositioned manually; locked false on desktop (does not affect desktop).
-      draggable: isVertical,
+      draggable: false,
       data: {
         label: phaseCard?.title || phase.label,
         phase: phase.id,
         step: def.step,
         theme,
-        orientation,
+        orientation: 'horizontal',
         title: phaseCard?.title || phase.label,
         bullets: phaseCard?.bullets || [],
       },
@@ -133,143 +120,137 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
     let sourceHandle = undefined;
     let targetHandle = undefined;
 
-    if (!isVertical) {
-      // Phase 01: Local Development
-      if (edge.from === 'developer' && edge.to === 'ideation') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'ideation' && edge.to === 'architecture') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'architecture' && edge.to === 'tech-stack-locked-in') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'tech-stack-locked-in' && edge.to === 'writing-the-code') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'writing-the-code' && edge.to === 'local-testing') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'top';
-      } else if (edge.from === 'local-testing' && edge.to === 'fail') {
-        sourceHandle = 'right';
-        targetHandle = 'target-top';
-      } else if (edge.from === 'fail' && edge.to === 'debug-fix-code') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'debug-fix-code' && edge.to === 'local-testing') {
-        sourceHandle = 'source-top';
-        targetHandle = 'left';
-      } else if (edge.from === 'fail' && edge.to === 'commit-push-code') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'commit-push-code' && edge.to === 'github') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'github' && edge.to === 'open-pull-request') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'top';
-      } else if (edge.from === 'developer-fixes-ci' && edge.to === 'commit-push-code') {
-        sourceHandle = 'source-top';
-        targetHandle = 'top';
-      }
-
-
-      // Phase 02: Continuous Integration
-      else if (edge.from === 'ci-system' && edge.to === 'install-dependencies') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'top';
-      } else if (edge.from === 'install-dependencies' && edge.to === 'build-the-application') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'top';
-      } else if (edge.from === 'run-unit-tests' && edge.to === 'run-integration-tests') {
-        sourceHandle = 'right';
-        targetHandle = 'bottom';
-      } else if (edge.from === 'run-integration-tests' && edge.to === 'code-coverage-check') {
-        sourceHandle = 'source-top';
-        targetHandle = 'bottom';
-      } else if (edge.from === 'code-coverage-check' && edge.to === 'store-artifact-in-registry') {
-        sourceHandle = 'source-top';
-        targetHandle = 'bottom';
-      } else if (edge.from === 'store-artifact-in-registry' && edge.to === 'task-failed') {
-        sourceHandle = 'source-top';
-        targetHandle = 'target-bottom';
-      } else if (edge.from === 'task-failed' && edge.to === 'pipeline-stops-ci') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'pipeline-stops-ci' && edge.to === 'developer-fixes-ci') {
-        sourceHandle = 'source-left';
-        targetHandle = 'bottom';
-      } else if (edge.from === 'task-failed' && edge.to === 'cd-system') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      }
-
-      // Phase 03: Continuous Delivery / Deployment
-      else if (edge.from === 'cd-system' && edge.to === 'manual-approval-gate') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'target-top';
-      } else if (edge.from === 'manual-approval-gate' && edge.to === 'pipeline-stops-cd') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'manual-approval-gate' && edge.to === 'fetch-build-artifacts') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'fetch-build-artifacts' && edge.to === 'inject-config-secrets') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'inject-config-secrets' && edge.to === 'package-container-image') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'package-container-image' && edge.to === 'push-image-docker-hub') {
-        sourceHandle = 'right';
-        targetHandle = 'top';
-      } else if (edge.from === 'push-image-docker-hub' && edge.to === 'pull-image-and-deploy') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'developer-fixes-cd' && edge.to === 'cd-system') {
-        sourceHandle = 'source-top';
-        targetHandle = 'top';
-      }
-
-
-      // Phase 04: Production
-      else if (edge.from === 'run-health-check' && edge.to === 'all-checks-pass') {
-        sourceHandle = 'right';
-        targetHandle = 'target-bottom';
-      } else if (edge.from === 'all-checks-pass' && edge.to === 'notify-developer-team') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'notify-developer-team' && edge.to === 'developer-fixes-cd') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'all-checks-pass' && edge.to === 'deployment-strategy') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      } else if (edge.from === 'automated-manual-deployment-production' && edge.to === 'post-production-health-check') {
-        sourceHandle = 'right';
-        targetHandle = 'target-bottom';
-      } else if (edge.from === 'post-production-health-check' && edge.to === 'rollback') {
-        sourceHandle = 'source-left';
-        targetHandle = 'target-right';
-      } else if (edge.from === 'rollback' && edge.to === 'notify-developer-team') {
-        sourceHandle = 'source-left';
-        targetHandle = 'top';
-      } else if (edge.from === 'post-production-health-check' && edge.to === 'end-users') {
-        sourceHandle = 'right';
-        targetHandle = 'left';
-      }
-
-      else if (edge.from === 'end-users' && edge.to === 'monitoring-observability') {
-        sourceHandle = 'source-bottom';
-        targetHandle = 'top';
-      } else if (edge.from === 'monitoring-observability' && edge.to === 'end-users') {
-        sourceHandle = 'source-top';
-        targetHandle = 'bottom';
-      }
+    // Phase 01: Local Development
+    if (edge.from === 'developer' && edge.to === 'ideation') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'ideation' && edge.to === 'architecture') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'architecture' && edge.to === 'tech-stack-locked-in') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'tech-stack-locked-in' && edge.to === 'writing-the-code') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'writing-the-code' && edge.to === 'local-testing') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'top';
+    } else if (edge.from === 'local-testing' && edge.to === 'fail') {
+      sourceHandle = 'right';
+      targetHandle = 'target-top';
+    } else if (edge.from === 'fail' && edge.to === 'debug-fix-code') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'debug-fix-code' && edge.to === 'local-testing') {
+      sourceHandle = 'source-top';
+      targetHandle = 'left';
+    } else if (edge.from === 'fail' && edge.to === 'commit-push-code') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'commit-push-code' && edge.to === 'github') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'github' && edge.to === 'open-pull-request') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'top';
+    } else if (edge.from === 'developer-fixes-ci' && edge.to === 'commit-push-code') {
+      sourceHandle = 'source-top';
+      targetHandle = 'top';
     }
 
-    const sHandle = sourceHandle || (isVertical ? 'source-bottom' : 'right');
-    const tHandle = targetHandle || (isVertical ? 'top' : 'left');
+    // Phase 02: Continuous Integration
+    else if (edge.from === 'ci-system' && edge.to === 'install-dependencies') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'top';
+    } else if (edge.from === 'install-dependencies' && edge.to === 'build-the-application') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'top';
+    } else if (edge.from === 'run-unit-tests' && edge.to === 'run-integration-tests') {
+      sourceHandle = 'right';
+      targetHandle = 'bottom';
+    } else if (edge.from === 'run-integration-tests' && edge.to === 'code-coverage-check') {
+      sourceHandle = 'source-top';
+      targetHandle = 'bottom';
+    } else if (edge.from === 'code-coverage-check' && edge.to === 'store-artifact-in-registry') {
+      sourceHandle = 'source-top';
+      targetHandle = 'bottom';
+    } else if (edge.from === 'store-artifact-in-registry' && edge.to === 'task-failed') {
+      sourceHandle = 'source-top';
+      targetHandle = 'target-bottom';
+    } else if (edge.from === 'task-failed' && edge.to === 'pipeline-stops-ci') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'pipeline-stops-ci' && edge.to === 'developer-fixes-ci') {
+      sourceHandle = 'source-left';
+      targetHandle = 'bottom';
+    } else if (edge.from === 'task-failed' && edge.to === 'cd-system') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    }
+
+    // Phase 03: Continuous Delivery / Deployment
+    else if (edge.from === 'cd-system' && edge.to === 'manual-approval-gate') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'target-top';
+    } else if (edge.from === 'manual-approval-gate' && edge.to === 'pipeline-stops-cd') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'manual-approval-gate' && edge.to === 'fetch-build-artifacts') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'fetch-build-artifacts' && edge.to === 'inject-config-secrets') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'inject-config-secrets' && edge.to === 'package-container-image') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'package-container-image' && edge.to === 'push-image-docker-hub') {
+      sourceHandle = 'right';
+      targetHandle = 'top';
+    } else if (edge.from === 'push-image-docker-hub' && edge.to === 'pull-image-and-deploy') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'developer-fixes-cd' && edge.to === 'cd-system') {
+      sourceHandle = 'source-top';
+      targetHandle = 'top';
+    }
+
+    // Phase 04: Production
+    else if (edge.from === 'run-health-check' && edge.to === 'all-checks-pass') {
+      sourceHandle = 'right';
+      targetHandle = 'target-bottom';
+    } else if (edge.from === 'all-checks-pass' && edge.to === 'notify-developer-team') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'notify-developer-team' && edge.to === 'developer-fixes-cd') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'all-checks-pass' && edge.to === 'deployment-strategy') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'automated-manual-deployment-production' && edge.to === 'post-production-health-check') {
+      sourceHandle = 'right';
+      targetHandle = 'target-bottom';
+    } else if (edge.from === 'post-production-health-check' && edge.to === 'rollback') {
+      sourceHandle = 'source-left';
+      targetHandle = 'target-right';
+    } else if (edge.from === 'rollback' && edge.to === 'notify-developer-team') {
+      sourceHandle = 'source-left';
+      targetHandle = 'top';
+    } else if (edge.from === 'post-production-health-check' && edge.to === 'end-users') {
+      sourceHandle = 'right';
+      targetHandle = 'left';
+    } else if (edge.from === 'end-users' && edge.to === 'monitoring-observability') {
+      sourceHandle = 'source-bottom';
+      targetHandle = 'top';
+    } else if (edge.from === 'monitoring-observability' && edge.to === 'end-users') {
+      sourceHandle = 'source-top';
+      targetHandle = 'bottom';
+    }
+
+    const sHandle = sourceHandle || 'right';
+    const tHandle = targetHandle || 'left';
 
     recordHandle(edge.from, sHandle);
     recordHandle(edge.to, tHandle);
@@ -287,11 +268,10 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
         isLoopback,
         isBidirectional,
         theme,
-        orientation,
+        orientation: 'horizontal',
         waypoints: edge.waypoints,
       },
     };
-
   });
 
   nodes.forEach((n) => {
@@ -300,4 +280,3 @@ export function getTransformedDiagramData(theme = 'dark', orientation = 'horizon
 
   return { nodes: [...headerNodes, ...nodes], edges, phases: diagramData.phases };
 }
-

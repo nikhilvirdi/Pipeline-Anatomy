@@ -339,11 +339,14 @@ html, body, #root {
   fill: var(--accent-primary) !important;
 }
 
-/* Mobile-only: shift zoom controls away from bottom edge / safe areas so they aren't clipped */
+/* Mobile-only: shift zoom controls comfortably above mobile navigation bars and safe areas */
 @media (max-width: 1023px) {
-  .react-flow__controls {
-    bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  .react-flow__controls,
+  .react-flow__panel.bottom.left,
+  .react-flow__panel.react-flow__controls {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
     left: calc(16px + env(safe-area-inset-left, 0px)) !important;
+    margin-bottom: 0 !important;
   }
 }
 

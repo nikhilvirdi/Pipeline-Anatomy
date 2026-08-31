@@ -479,7 +479,7 @@ function DiagramCanvas() {
     : null;
 
   return (
-    <div className="w-screen h-screen relative bg-canvas">
+    <div className="w-screen h-screen h-[100dvh] relative bg-canvas overflow-hidden">
       {/* Floating Tooltip Popup. On small screens it sits at the bottom of the
           viewport instead of chasing the pointer. */}
       {tooltipNode && (
